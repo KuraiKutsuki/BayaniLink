@@ -7,7 +7,7 @@ export default function Home() {
     <main className="min-h-screen bg-slate-50 dark:bg-gray-950 transition-colors duration-300">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200/80 dark:border-gray-800/50 transition-colors duration-300">
-        <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="max-w-screen-lg mx-auto px-4 py-3 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center shadow-lg shadow-red-900/40">
             <span className="text-lg">🆘</span>
           </div>
@@ -32,11 +32,11 @@ export default function Home() {
 
       {/* Hero Banner */}
       <div className="relative bg-gradient-to-b from-red-100/80 dark:from-red-950/60 to-slate-50 dark:to-gray-950 border-b border-red-100 dark:border-gray-800/50 transition-colors duration-300">
-        <div className="max-w-lg mx-auto px-4 py-6">
+        <div className="max-w-screen-lg mx-auto px-4 py-6">
           <p className="text-red-600 dark:text-red-400 text-xs font-semibold uppercase tracking-widest mb-1">
             🏙️ Ligao City, Albay
           </p>
-          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight transition-colors duration-300">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight transition-colors duration-300">
             Report an Emergency
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-1.5 transition-colors duration-300">
@@ -46,7 +46,7 @@ export default function Home() {
       </div>
 
       {/* Form Container */}
-      <div className="max-w-lg mx-auto px-4 py-6 pb-28">
+      <div className="max-w-screen-lg mx-auto px-4 py-6 pb-28">
         <CitizenForm />
       </div>
 

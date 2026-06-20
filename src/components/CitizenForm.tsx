@@ -184,12 +184,12 @@ export default function CitizenForm() {
         </div>
       )}
 
-      {/* Category Selection */}
+      {/* Category Selection — 3 cols on mobile, 6 cols on md+ */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
           Incident Type <span className="text-red-500 dark:text-red-400">*</span>
         </label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.label}
@@ -209,111 +209,113 @@ export default function CitizenForm() {
         </div>
       </div>
 
-      {/* Barangay Select */}
-      <div>
-        <label htmlFor="barangay" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-          Barangay <span className="text-red-500 dark:text-red-400">*</span>
-        </label>
-        <select
-          id="barangay"
-          value={form.barangay}
-          onChange={(e) => setForm((f) => ({ ...f, barangay: e.target.value }))}
-          className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700
-            rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm
-            focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition-colors"
-        >
-          <option value="">Select barangay…</option>
-          {BARANGAYS.map((b) => (
-            <option key={b} value={b}>{b}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Description */}
-      <div>
-        <label htmlFor="description" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-          Description <span className="text-red-500 dark:text-red-400">*</span>
-        </label>
-        <textarea
-          id="description"
-          rows={4}
-          placeholder="Briefly describe the emergency situation…"
-          value={form.description}
-          onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-          className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700
-            rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm
-            placeholder:text-gray-400 dark:placeholder:text-gray-600
-            focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 resize-none transition-colors"
-        />
-      </div>
-
-      {/* Location */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-          Your Location <span className="text-red-500 dark:text-red-400">*</span>
-        </label>
-        <button
-          type="button"
-          id="get-location-btn"
-          onClick={handleGetLocation}
-          disabled={status === 'locating'}
-          className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-semibold transition-all duration-200
-            ${form.latitude !== null
-              ? 'border-green-400/60 dark:border-green-500/60 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-              : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800/50 text-gray-600 dark:text-gray-300 hover:border-red-300 dark:hover:border-gray-500'
-            } disabled:opacity-60 disabled:cursor-not-allowed`}
-        >
-          {status === 'locating' ? (
-            <Loader2 size={16} className="animate-spin" />
-          ) : (
-            <MapPin size={16} />
-          )}
-          {status === 'locating'
-            ? 'Locating…'
-            : form.latitude !== null
-            ? `📍 ${form.latitude.toFixed(5)}, ${form.longitude!.toFixed(5)}`
-            : 'Get My Current Location'}
-        </button>
-      </div>
-
-      {/* Photo Upload */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-          Photo <span className="text-gray-400 dark:text-gray-500 font-normal">(optional, max 5MB)</span>
-        </label>
-        {form.imagePreview ? (
-          <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={form.imagePreview} alt="Preview" className="w-full h-48 object-cover" />
-            <button
-              type="button"
-              onClick={clearImage}
-              className="absolute top-2 right-2 bg-gray-900/80 rounded-full p-1 hover:bg-red-900/80 transition-colors"
-            >
-              <X size={16} className="text-white" />
-            </button>
-          </div>
-        ) : (
-          <label
-            htmlFor="photo-upload"
-            className="flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed
-              border-gray-300 dark:border-gray-700
-              bg-gray-50 dark:bg-gray-800/30
-              cursor-pointer hover:border-red-300 dark:hover:border-gray-500
-              hover:bg-red-50/50 dark:hover:bg-gray-800/60 transition-all"
-          >
-            <Upload size={24} className="text-gray-400 dark:text-gray-500" />
-            <span className="text-gray-500 dark:text-gray-500 text-sm">Tap to upload a photo</span>
-            <input
-              id="photo-upload"
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={handleImageChange}
-            />
+      {/* Barangay + Description — 1 col on mobile, 2 cols on md+ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="barangay" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+            Barangay <span className="text-red-500 dark:text-red-400">*</span>
           </label>
-        )}
+          <select
+            id="barangay"
+            value={form.barangay}
+            onChange={(e) => setForm((f) => ({ ...f, barangay: e.target.value }))}
+            className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700
+              rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm
+              focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition-colors"
+          >
+            <option value="">Select barangay…</option>
+            {BARANGAYS.map((b) => (
+              <option key={b} value={b}>{b}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="description" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+            Description <span className="text-red-500 dark:text-red-400">*</span>
+          </label>
+          <textarea
+            id="description"
+            rows={4}
+            placeholder="Briefly describe the emergency situation…"
+            value={form.description}
+            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+            className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700
+              rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm
+              placeholder:text-gray-400 dark:placeholder:text-gray-600
+              focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 resize-none transition-colors"
+          />
+        </div>
+      </div>
+
+      {/* Location + Photo — 1 col on mobile, 2 cols on md+ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+            Your Location <span className="text-red-500 dark:text-red-400">*</span>
+          </label>
+          <button
+            type="button"
+            id="get-location-btn"
+            onClick={handleGetLocation}
+            disabled={status === 'locating'}
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-semibold transition-all duration-200
+              ${form.latitude !== null
+                ? 'border-green-400/60 dark:border-green-500/60 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800/50 text-gray-600 dark:text-gray-300 hover:border-red-300 dark:hover:border-gray-500'
+              } disabled:opacity-60 disabled:cursor-not-allowed`}
+          >
+            {status === 'locating' ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <MapPin size={16} />
+            )}
+            {status === 'locating'
+              ? 'Locating…'
+              : form.latitude !== null
+              ? `📍 ${form.latitude.toFixed(5)}, ${form.longitude!.toFixed(5)}`
+              : 'Get My Current Location'}
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+            Photo <span className="text-gray-400 dark:text-gray-500 font-normal">(optional, max 5MB)</span>
+          </label>
+          {form.imagePreview ? (
+            <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={form.imagePreview} alt="Preview" className="w-full h-48 object-cover" />
+              <button
+                type="button"
+                onClick={clearImage}
+                className="absolute top-2 right-2 bg-gray-900/80 rounded-full p-1 hover:bg-red-900/80 transition-colors"
+              >
+                <X size={16} className="text-white" />
+              </button>
+            </div>
+          ) : (
+            <label
+              htmlFor="photo-upload"
+              className="flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed
+                border-gray-300 dark:border-gray-700
+                bg-gray-50 dark:bg-gray-800/30
+                cursor-pointer hover:border-red-300 dark:hover:border-gray-500
+                hover:bg-red-50/50 dark:hover:bg-gray-800/60 transition-all"
+            >
+              <Upload size={24} className="text-gray-400 dark:text-gray-500" />
+              <span className="text-gray-500 dark:text-gray-500 text-sm">Tap to upload a photo</span>
+              <input
+                id="photo-upload"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            </label>
+          )}
+        </div>
       </div>
 
       {/* Submit */}
