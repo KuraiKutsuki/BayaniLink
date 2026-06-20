@@ -3,6 +3,11 @@
 @layer base {
   :root {
     --font-inter: 'Inter', sans-serif;
+    color-scheme: dark;
+  }
+
+  .light {
+    color-scheme: light;
   }
 
   * {
@@ -15,15 +20,32 @@
 
   body {
     font-family: var(--font-inter), sans-serif;
-    background-color: #030712;
-    color: #f9fafb;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Dark mode (default) */
+  :root body,
+  .dark body {
+    background-color: #030712;
+    color: #f9fafb;
+  }
+
+  /* Light mode overrides */
+  .light body {
+    background-color: #f8fafc;
+    color: #0f172a;
   }
 
   select option {
     background-color: #1f2937;
     color: #f9fafb;
+  }
+
+  .light select option {
+    background-color: #ffffff;
+    color: #0f172a;
   }
 }
 

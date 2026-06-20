@@ -51,6 +51,8 @@ export default function CitizenForm() {
 
   const handleCategorySelect = (cat: string) => {
     setForm((f) => ({ ...f, category: cat }))
+    setErrorMsg('')
+    if (status === 'error') setStatus('idle')
   }
 
   const handleGetLocation = () => {
@@ -106,7 +108,6 @@ export default function CitizenForm() {
 
     let image_url: string | null = null
 
-    // Upload image if provided
     if (form.imageFile) {
       setStatus('uploading')
       const fileName = `${Date.now()}-${form.imageFile.name.replace(/\s/g, '_')}`
@@ -124,7 +125,6 @@ export default function CitizenForm() {
       image_url = urlData.publicUrl
     }
 
-    // Submit report
     setStatus('submitting')
     const { error: insertError } = await supabase.from('reports').insert({
       category: form.category,
@@ -142,7 +142,6 @@ export default function CitizenForm() {
     }
 
     setStatus('success')
-    // Reset form after a short delay
     setTimeout(() => {
       setForm({
         category: '',
@@ -160,14 +159,14 @@ export default function CitizenForm() {
   if (status === 'success') {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-        <div className="w-20 h-20 rounded-full bg-green-900/30 border border-green-500/40 flex items-center justify-center animate-bounce-once">
-          <CheckCircle size={40} className="text-green-400" />
+        <div className="w-20 h-20 rounded-full bg-green-900/30 dark:bg-green-900/30 light:bg-green-100 border border-green-500/40 flex items-center justify-center">
+          <CheckCircle size={40} className="text-green-400 dark:text-green-400 light:text-green-600" />
         </div>
-        <h2 className="text-2xl font-bold text-white">Report Submitted!</h2>
-        <p className="text-gray-400 max-w-xs">
+        <h2 className="text-2xl font-bold text-white dark:text-white light:text-gray-900">Report Submitted!</h2>
+        <p className="text-gray-400 dark:text-gray-400 light:text-gray-600 max-w-xs">
           Your emergency report has been sent to the Ligao City CDRRMO. Help is on the way.
         </p>
-        <p className="text-xs text-gray-600">Resetting form…</p>
+        <p className="text-xs text-gray-600 dark:text-gray-600 light:text-gray-400">Resetting form…</p>
       </div>
     )
   }
@@ -178,16 +177,16 @@ export default function CitizenForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
 
       {/* Error banner */}
-      {status === 'error' && errorMsg && (
-        <div className="flex items-center gap-3 bg-red-900/30 border border-red-500/40 rounded-xl px-4 py-3">
-          <AlertTriangle size={18} className="text-red-400 shrink-0" />
-          <p className="text-red-300 text-sm">{errorMsg}</p>
+      {(status === 'error' || errorMsg) && errorMsg && (
+        <div className="flex items-center gap-3 bg-red-900/30 dark:bg-red-900/30 light:bg-red-50 border border-red-500/40 dark:border-red-500/40 light:border-red-300 rounded-xl px-4 py-3">
+          <AlertTriangle size={18} className="text-red-400 dark:text-red-400 light:text-red-600 shrink-0" />
+          <p className="text-red-300 dark:text-red-300 light:text-red-700 text-sm">{errorMsg}</p>
         </div>
       )}
 
       {/* Category Selection */}
       <div>
-        <label className="block text-sm font-semibold text-gray-300 mb-3">
+        <label className="block text-sm font-semibold text-gray-300 dark:text-gray-300 light:text-gray-700 mb-3 transition-colors">
           Incident Type <span className="text-red-400">*</span>
         </label>
         <div className="grid grid-cols-3 gap-2">
@@ -199,7 +198,7 @@ export default function CitizenForm() {
               className={`flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all duration-200 text-xs font-semibold
                 ${form.category === cat.label
                   ? `bg-gradient-to-b ${cat.color} border-white/30 text-white scale-105 shadow-lg`
-                  : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+                  : 'border-gray-700 dark:border-gray-700 light:border-gray-200 bg-gray-800/50 dark:bg-gray-800/50 light:bg-white text-gray-400 dark:text-gray-400 light:text-gray-600 hover:border-gray-500 dark:hover:border-gray-500 light:hover:border-red-300 hover:text-gray-200 dark:hover:text-gray-200 light:hover:text-gray-900 light:shadow-sm'
                 }`}
               id={`category-${cat.label.replace(/\s/g, '-').toLowerCase()}`}
             >
@@ -212,14 +211,15 @@ export default function CitizenForm() {
 
       {/* Barangay Select */}
       <div>
-        <label htmlFor="barangay" className="block text-sm font-semibold text-gray-300 mb-2">
+        <label htmlFor="barangay" className="block text-sm font-semibold text-gray-300 dark:text-gray-300 light:text-gray-700 mb-2 transition-colors">
           Barangay <span className="text-red-400">*</span>
         </label>
         <select
           id="barangay"
           value={form.barangay}
           onChange={(e) => setForm((f) => ({ ...f, barangay: e.target.value }))}
-          className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
+          className="w-full bg-gray-800 dark:bg-gray-800 light:bg-white border border-gray-700 dark:border-gray-700 light:border-gray-300
+            rounded-xl px-4 py-3 text-white dark:text-white light:text-gray-900 text-sm
             focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition-colors"
         >
           <option value="">Select barangay…</option>
@@ -231,7 +231,7 @@ export default function CitizenForm() {
 
       {/* Description */}
       <div>
-        <label htmlFor="description" className="block text-sm font-semibold text-gray-300 mb-2">
+        <label htmlFor="description" className="block text-sm font-semibold text-gray-300 dark:text-gray-300 light:text-gray-700 mb-2 transition-colors">
           Description <span className="text-red-400">*</span>
         </label>
         <textarea
@@ -240,15 +240,16 @@ export default function CitizenForm() {
           placeholder="Briefly describe the emergency situation…"
           value={form.description}
           onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-          className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm
-            placeholder:text-gray-600 focus:outline-none focus:border-red-500 focus:ring-1
-            focus:ring-red-500/50 resize-none transition-colors"
+          className="w-full bg-gray-800 dark:bg-gray-800 light:bg-white border border-gray-700 dark:border-gray-700 light:border-gray-300
+            rounded-xl px-4 py-3 text-white dark:text-white light:text-gray-900 text-sm
+            placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-400
+            focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 resize-none transition-colors"
         />
       </div>
 
       {/* Location */}
       <div>
-        <label className="block text-sm font-semibold text-gray-300 mb-2">
+        <label className="block text-sm font-semibold text-gray-300 dark:text-gray-300 light:text-gray-700 mb-2 transition-colors">
           Your Location <span className="text-red-400">*</span>
         </label>
         <button
@@ -258,8 +259,8 @@ export default function CitizenForm() {
           disabled={status === 'locating'}
           className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-semibold transition-all duration-200
             ${form.latitude !== null
-              ? 'border-green-500/60 bg-green-900/20 text-green-400'
-              : 'border-gray-700 bg-gray-800/50 text-gray-300 hover:border-gray-500'
+              ? 'border-green-500/60 bg-green-900/20 dark:bg-green-900/20 light:bg-green-50 text-green-400 dark:text-green-400 light:text-green-700'
+              : 'border-gray-700 dark:border-gray-700 light:border-gray-300 bg-gray-800/50 dark:bg-gray-800/50 light:bg-white text-gray-300 dark:text-gray-300 light:text-gray-600 hover:border-gray-500 dark:hover:border-gray-500 light:hover:border-red-300'
             } disabled:opacity-60 disabled:cursor-not-allowed`}
         >
           {status === 'locating' ? (
@@ -277,11 +278,11 @@ export default function CitizenForm() {
 
       {/* Photo Upload */}
       <div>
-        <label className="block text-sm font-semibold text-gray-300 mb-2">
+        <label className="block text-sm font-semibold text-gray-300 dark:text-gray-300 light:text-gray-700 mb-2 transition-colors">
           Photo <span className="text-gray-500 font-normal">(optional, max 5MB)</span>
         </label>
         {form.imagePreview ? (
-          <div className="relative rounded-xl overflow-hidden border border-gray-700">
+          <div className="relative rounded-xl overflow-hidden border border-gray-700 dark:border-gray-700 light:border-gray-200">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={form.imagePreview} alt="Preview" className="w-full h-48 object-cover" />
             <button
@@ -296,10 +297,13 @@ export default function CitizenForm() {
           <label
             htmlFor="photo-upload"
             className="flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed
-              border-gray-700 bg-gray-800/30 cursor-pointer hover:border-gray-500 hover:bg-gray-800/60 transition-all"
+              border-gray-700 dark:border-gray-700 light:border-gray-300
+              bg-gray-800/30 dark:bg-gray-800/30 light:bg-gray-50
+              cursor-pointer hover:border-gray-500 dark:hover:border-gray-500 light:hover:border-red-300
+              hover:bg-gray-800/60 dark:hover:bg-gray-800/60 light:hover:bg-red-50/50 transition-all"
           >
-            <Upload size={24} className="text-gray-500" />
-            <span className="text-gray-500 text-sm">Tap to upload a photo</span>
+            <Upload size={24} className="text-gray-500 dark:text-gray-500 light:text-gray-400" />
+            <span className="text-gray-500 dark:text-gray-500 light:text-gray-500 text-sm">Tap to upload a photo</span>
             <input
               id="photo-upload"
               type="file"
