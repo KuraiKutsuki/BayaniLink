@@ -40,7 +40,10 @@ export default function QuickDial() {
         }`}
       >
         <div className="bg-gradient-to-br from-red-700 to-red-900 px-4 py-3 flex items-center justify-between">
-          <span className="text-white font-bold text-sm tracking-wide">🚨 Emergency Hotlines</span>
+          <span className="flex items-center gap-2 text-white font-bold text-sm tracking-wide">
+            <Phone size={14} className="text-red-300" />
+            Emergency Hotlines
+          </span>
           <button onClick={() => setOpen(false)} className="text-red-200 hover:text-white transition-colors">
             <X size={18} />
           </button>

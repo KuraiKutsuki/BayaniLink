@@ -1,27 +1,28 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { MapPin, Upload, AlertTriangle, CheckCircle, Loader2, X } from 'lucide-react'
+import { MapPin, Upload, AlertTriangle, CheckCircle, Loader2, X, Search, ChevronDown, Waves, Flame, Car, Zap, HeartPulse, CircleAlert, Send } from 'lucide-react'
 
 const CATEGORIES = [
-  { label: 'Flood', emoji: '🌊', color: 'from-blue-600 to-blue-800' },
-  { label: 'Fire', emoji: '🔥', color: 'from-orange-600 to-red-700' },
-  { label: 'Crash', emoji: '💥', color: 'from-yellow-600 to-orange-700' },
-  { label: 'Dangling Wire', emoji: '⚡', color: 'from-yellow-500 to-yellow-700' },
-  { label: 'Medical', emoji: '🏥', color: 'from-green-600 to-green-800' },
-  { label: 'Other', emoji: '⚠️', color: 'from-gray-600 to-gray-800' },
+  { label: 'Flood',         icon: Waves,       color: 'from-blue-600 to-blue-800' },
+  { label: 'Fire',          icon: Flame,       color: 'from-orange-600 to-red-700' },
+  { label: 'Crash',         icon: Car,         color: 'from-yellow-600 to-orange-700' },
+  { label: 'Dangling Wire', icon: Zap,         color: 'from-yellow-500 to-yellow-700' },
+  { label: 'Medical',       icon: HeartPulse,  color: 'from-green-600 to-green-800' },
+  { label: 'Other',         icon: CircleAlert, color: 'from-gray-600 to-gray-800' },
 ]
 
 const BARANGAYS = [
-  'Allang', 'Amtic', 'Bago', 'Baligang', 'Barayong', 'Basag', 'Batobalani',
-  'Bigaa', 'Binanowan', 'Bubulusan', 'Calzada', 'Cocok-Cabitan', 'Coliat',
-  'Dunao', 'Estancia', 'Gumabao', 'Hilot', 'Holugan', 'Imalnod', 'Iraya',
-  'Labao', 'Laniton', 'Lao', 'Layon', 'Libod', 'Ligao City Proper', 'Luyuang',
-  'Macalidong', 'Mahaba', 'Nabonton', 'Nagas', 'Oas', 'Paulba', 'Paulog',
-  'Pinamaniquian', 'Ponso', 'Pulang Lupa', 'Salvacion', 'San Antonio',
-  'San Francisco', 'San Marcos', 'San Miguel', 'San Vicente', 'Santa Cruz',
-  'Tagpo', 'Talaohukan', 'Talongog', 'Tiwi', 'Tula-tula', 'Tupas', 'Ulango', 'Virac',
+  'Abella', 'Allang', 'Amtic', 'Bacong', 'Bagumbayan', 'Balanac', 'Baligang',
+  'Barayong', 'Basag', 'Batang', 'Bay', 'Binanowan', 'Binatagan', 'Bobonsuran',
+  'Bonga', 'Busac', 'Busay', 'Cabarian', 'Calzada', 'Catburawan', 'Cavasi',
+  'Culliat', 'Dunao', 'Francia', 'Guilid', 'Herrera', 'Layon', 'Macalidong',
+  'Mahaba', 'Malama', 'Maonon', 'Nabonton', 'Nasisi', 'Oma-Oma', 'Palapas',
+  'Pandan', 'Paulba', 'Paulog', 'Pinamaniquian', 'Pinit', 'Ranao-Ranao',
+  'San Vicente', 'Santa Cruz', 'Tagpo', 'Tambo', 'Tandarora', 'Tastas',
+  'Tinago', 'Tinampo', 'Tiongson', 'Tomolin', 'Tuburan',
+  'Tula-Tula Grande', 'Tula-Tula Pequeño', 'Tupas',
 ]
 
 interface FormState {
@@ -35,6 +36,146 @@ interface FormState {
 }
 
 type SubmitStatus = 'idle' | 'locating' | 'uploading' | 'submitting' | 'success' | 'error'
+
+// ── Searchable Barangay Dropdown ─────────────────────────────────────────────
+interface BarangaySelectProps {
+  value: string
+  onChange: (val: string) => void
+}
+
+function BarangaySelect({ value, onChange }: BarangaySelectProps) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const containerRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const filtered = query.trim()
+    ? BARANGAYS.filter((b) => b.toLowerCase().includes(query.toLowerCase()))
+    : BARANGAYS
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+        setQuery('')
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  // Close on Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setOpen(false); setQuery('') }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
+  // Focus search input when opened
+  useEffect(() => {
+    if (open) setTimeout(() => inputRef.current?.focus(), 50)
+  }, [open])
+
+  const handleSelect = (barangay: string) => {
+    onChange(barangay)
+    setOpen(false)
+    setQuery('')
+  }
+
+  return (
+    <div ref={containerRef} className="relative">
+      {/* Trigger button */}
+      <button
+        type="button"
+        id="barangay-select-btn"
+        onClick={() => setOpen((o) => !o)}
+        className={`w-full flex items-center justify-between bg-white dark:bg-gray-800 border
+          rounded-xl px-4 py-3 text-sm transition-colors text-left
+          ${
+            open
+              ? 'border-red-500 ring-1 ring-red-500/50'
+              : 'border-gray-300 dark:border-gray-700 hover:border-red-300 dark:hover:border-gray-500'
+          }`}
+      >
+        <span className={value ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-400 dark:text-gray-500'}>
+          {value || 'Select barangay…'}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-400 dark:text-gray-500 transition-transform duration-200 shrink-0 ml-2 ${
+            open ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+
+      {/* Dropdown panel */}
+      {open && (
+        <div className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+          rounded-xl shadow-xl overflow-hidden">
+          {/* Search input */}
+          <div className="p-2 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900/60 rounded-lg px-3 py-2">
+              <Search size={14} className="text-gray-400 shrink-0" />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Search barangay…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="flex-1 bg-transparent text-sm text-gray-900 dark:text-white
+                  placeholder:text-gray-400 dark:placeholder:text-gray-500
+                  outline-none min-w-0"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Options list */}
+          <ul className="max-h-52 overflow-y-auto scrollbar-hide py-1">
+            {filtered.length > 0 ? (
+              filtered.map((b) => (
+                <li key={b}>
+                  <button
+                    type="button"
+                    onClick={() => handleSelect(b)}
+                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors
+                      ${
+                        b === value
+                          ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 font-semibold'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      }`}
+                  >
+                    {b}
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
+                No barangay found for &ldquo;{query}&rdquo;
+              </li>
+            )}
+          </ul>
+
+          {/* Footer count */}
+          <div className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
+            {filtered.length} of {BARANGAYS.length} barangays
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function CitizenForm() {
   const [form, setForm] = useState<FormState>({
@@ -202,7 +343,7 @@ export default function CitizenForm() {
                 }`}
               id={`category-${cat.label.replace(/\s/g, '-').toLowerCase()}`}
             >
-              <span className="text-2xl">{cat.emoji}</span>
+              <cat.icon size={26} />
               {cat.label}
             </button>
           ))}
@@ -212,22 +353,13 @@ export default function CitizenForm() {
       {/* Barangay + Description — 1 col on mobile, 2 cols on md+ */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label htmlFor="barangay" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
             Barangay <span className="text-red-500 dark:text-red-400">*</span>
           </label>
-          <select
-            id="barangay"
+          <BarangaySelect
             value={form.barangay}
-            onChange={(e) => setForm((f) => ({ ...f, barangay: e.target.value }))}
-            className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700
-              rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm
-              focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition-colors"
-          >
-            <option value="">Select barangay…</option>
-            {BARANGAYS.map((b) => (
-              <option key={b} value={b}>{b}</option>
-            ))}
-          </select>
+            onChange={(val) => setForm((f) => ({ ...f, barangay: val }))}
+          />
         </div>
 
         <div>
@@ -273,7 +405,7 @@ export default function CitizenForm() {
             {status === 'locating'
               ? 'Locating…'
               : form.latitude !== null
-              ? `📍 ${form.latitude.toFixed(5)}, ${form.longitude!.toFixed(5)}`
+              ? `${form.latitude.toFixed(5)}, ${form.longitude!.toFixed(5)}`
               : 'Get My Current Location'}
           </button>
         </div>
@@ -334,7 +466,7 @@ export default function CitizenForm() {
             {status === 'uploading' ? 'Uploading photo…' : status === 'submitting' ? 'Submitting…' : 'Processing…'}
           </>
         ) : (
-          '🚨 Submit Emergency Report'
+          <><Send size={18} />Submit Emergency Report</>
         )}
       </button>
     </form>

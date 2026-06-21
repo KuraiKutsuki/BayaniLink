@@ -1,4 +1,4 @@
-# 🆘 Bayanilink — Ligao City Emergency Reporting System
+# 🆘 BayaniLink — Ligao City Emergency Reporting System
 
 > A real-time emergency reporting web application for **Ligao City, Albay, Philippines**, connecting citizens directly to the City Disaster Risk Reduction and Management Office (CDRRMO).
 
@@ -6,9 +6,9 @@
 
 ## 📋 Overview
 
-**Bayanilink** is a responsive full-stack web application built to improve emergency response times in Ligao City. Citizens can submit geo-tagged incident reports from their mobile devices, while LGU personnel monitor and manage all incoming reports through a real-time admin dashboard.
+**BayaniLink** is a responsive full-stack web application built to improve emergency response times in Ligao City. Citizens can submit geo-tagged incident reports from their mobile devices, while LGU personnel monitor and manage all incoming reports through a real-time admin dashboard.
 
-The name *"Bayanilink"* comes from the Filipino word **"Bayanihan"** (community spirit of helping one another) and **"link"** — representing the connection between citizens and their local government during emergencies.
+The name *"BayaniLink"* comes from the Filipino word **"Bayanihan"** (community spirit of helping one another) and **"link"** — representing the connection between citizens and their local government during emergencies.
 
 ---
 
@@ -202,4 +202,4 @@ This project was developed as a prototype for Ligao City, Albay, Philippines. Al
 
 ---
 
-*Built with ❤️ for the people of Ligao City.*
+*Built with ❤️ for the people of Ligao City by the BayaniLink team.*

@@ -6,9 +6,13 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Bayanilink — Ligao City Emergency Reporting',
+  title: 'BayaniLink — Ligao City Emergency Reporting',
   description: 'Report emergencies in Ligao City, Albay. Fast, easy, and direct to CDRRMO.',
   keywords: ['Ligao City', 'emergency', 'report', 'CDRRMO', 'Albay', 'Philippines'],
+  icons: {
+    icon: '/BayaniLink.png',
+    apple: '/BayaniLink.png',
+  },
 }
 
 export const viewport: Viewport = {
@@ -20,7 +24,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body className="bg-slate-50 dark:bg-gray-950 font-sans antialiased min-h-screen transition-colors duration-300">
+
+      <body className="bg-rose-50/40 dark:bg-gray-950 font-sans antialiased min-h-screen transition-colors duration-300">
         <ThemeProvider>
           {children}
         </ThemeProvider>

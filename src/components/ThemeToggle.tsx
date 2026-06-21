@@ -5,37 +5,40 @@ import { useEffect, useState } from 'react'
 import { Sun, Moon } from 'lucide-react'
 
 export default function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Avoid hydration mismatch — only render after mount
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
+  // Visible placeholder while JS loads — prevents invisible button on mobile
   if (!mounted) {
-    return <div className="w-9 h-9" />
+    return (
+      <div className="w-9 h-9 rounded-xl flex items-center justify-center border bg-gray-800 border-gray-700 text-yellow-400">
+        <Sun size={16} />
+      </div>
+    )
   }
 
-  const isDark = theme === 'dark'
+  const isDark = resolvedTheme === 'dark'
 
   return (
     <button
       id="theme-toggle-btn"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      type="button"
       className={`
         w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300
-        border hover:scale-110 active:scale-95
+        border touch-manipulation active:scale-95
         ${isDark
-          ? 'bg-gray-800 border-gray-700 text-yellow-400 hover:bg-gray-700 hover:border-gray-600'
-          : 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100'
+          ? 'bg-gray-800 border-gray-700 text-yellow-400 md:hover:bg-gray-700 md:hover:border-gray-600'
+          : 'bg-amber-50 border-amber-200 text-amber-600 md:hover:bg-amber-100'
         }
       `}
     >
-      {isDark ? (
-        <Sun size={16} className="transition-transform duration-300 rotate-0" />
-      ) : (
-        <Moon size={16} className="transition-transform duration-300" />
-      )}
+      {isDark ? <Sun size={16} /> : <Moon size={16} />}
     </button>
   )
 }

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:is([data-theme="dark"], [data-theme="dark"] *));
 
 @layer base {
   :root {
@@ -27,7 +27,7 @@
     color: #f9fafb;
   }
 
-  .dark select option {
+  [data-theme="dark"] select option {
     background-color: #1f2937;
     color: #f9fafb;
   }
