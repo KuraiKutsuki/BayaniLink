@@ -6,9 +6,9 @@ import { MapPin, Phone } from 'lucide-react'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-rose-50/40 dark:bg-gray-950 transition-colors duration-300">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-red-50/90 dark:bg-gray-950/80 backdrop-blur-md border-b border-red-100 dark:border-gray-800/50 transition-colors duration-300">
+      <header className="sticky top-0 z-30 bg-white/95 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800/50 transition-colors duration-300">
         <div className="max-w-screen-lg mx-auto px-4 py-3 flex items-center gap-3">
           <div className="w-9 h-9 flex items-center justify-center shrink-0">
             <Image src="/BayaniLink.png" alt="BayaniLink Logo" width={36} height={36} priority style={{ width: '36px', height: '36px' }} />
@@ -33,7 +33,7 @@ export default function Home() {
       </header>
 
       {/* Hero Banner */}
-      <div className="relative bg-gradient-to-b from-red-100 dark:from-red-950/60 to-rose-50/0 dark:to-gray-950 border-b border-red-200/60 dark:border-gray-800/50 transition-colors duration-300">
+      <div className="relative bg-gradient-to-b from-red-50 dark:from-red-950/60 to-gray-50/0 dark:to-gray-950 border-b border-gray-200/60 dark:border-gray-800/50 transition-colors duration-300">
         <div className="max-w-screen-lg mx-auto px-4 py-6">
           <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400 text-xs font-semibold uppercase tracking-widest mb-1">
             <MapPin size={12} />
@@ -54,7 +54,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-red-200 dark:border-gray-800/50 bg-red-100/90 dark:bg-gray-900/40 mt-4 transition-colors duration-300">
+      <footer className="border-t border-gray-200 dark:border-gray-800/50 bg-gray-100 dark:bg-gray-900/40 mt-4 transition-colors duration-300">
         <div className="max-w-screen-lg mx-auto px-4 py-8 pb-28">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -117,7 +117,7 @@ export default function Home() {
           </div>
 
           {/* Bottom bar */}
-          <div className="border-t border-red-100/80 dark:border-gray-800/50 mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div className="border-t border-gray-200/80 dark:border-gray-800/50 mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
             <p className="text-xs text-gray-400 dark:text-gray-600">
               &copy; {new Date().getFullYear()} BayaniLink &mdash; Ligao City, Albay, Philippines. All rights reserved.
             </p>

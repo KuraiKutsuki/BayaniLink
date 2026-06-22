@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
 
-      <body className="bg-rose-50/40 dark:bg-gray-950 font-sans antialiased min-h-screen transition-colors duration-300">
+      <body className="bg-gray-50 dark:bg-gray-950 font-sans antialiased min-h-screen transition-colors duration-300">
         <ThemeProvider>
           {children}
         </ThemeProvider>
