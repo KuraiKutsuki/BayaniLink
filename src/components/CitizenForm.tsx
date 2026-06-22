@@ -1,8 +1,19 @@
 'use client'
 
 import { useState, useCallback, useRef, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import { supabase } from '@/lib/supabaseClient'
-import { MapPin, Upload, AlertTriangle, CheckCircle, Loader2, X, Search, ChevronDown, Waves, Flame, Car, Zap, HeartPulse, CircleAlert, Send } from 'lucide-react'
+import { MapPin, Upload, AlertTriangle, CheckCircle, Loader2, X, Search, ChevronDown, Waves, Flame, Car, Zap, HeartPulse, CircleAlert, Send, Maximize2, ArrowLeft } from 'lucide-react'
+
+// Leaflet map — SSR disabled (Leaflet requires browser APIs)
+const ReportMap = dynamic(() => import('./ReportMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[260px] rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+      <span className="text-gray-400 dark:text-gray-500 text-sm">Loading map…</span>
+    </div>
+  ),
+})
 
 const CATEGORIES = [
   { label: 'Flood',         icon: Waves,       color: 'from-blue-600 to-blue-800' },
@@ -36,6 +47,8 @@ interface FormState {
 }
 
 type SubmitStatus = 'idle' | 'locating' | 'uploading' | 'submitting' | 'success' | 'error'
+
+const MAX_DESC = 500
 
 // ── Searchable Barangay Dropdown ─────────────────────────────────────────────
 interface BarangaySelectProps {
@@ -189,6 +202,33 @@ export default function CitizenForm() {
   })
   const [status, setStatus] = useState<SubmitStatus>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [reportId, setReportId] = useState<string | null>(null)
+  const [reportCategory, setReportCategory] = useState<string>('')
+  const [countdown, setCountdown] = useState(8)
+  // Increments each time GPS sets coords → tells the map to fly there
+  const [gpsTrigger, setGpsTrigger] = useState(0)
+
+  // ── Fullscreen map modal state ────────────────────────────────────────────
+  const [mapFullscreen, setMapFullscreen] = useState(false)
+  const [tempLat, setTempLat] = useState<number | null>(null)
+  const [tempLng, setTempLng] = useState<number | null>(null)
+  const [tempGpsTrigger, setTempGpsTrigger] = useState(0)
+  const [fullscreenGpsLoading, setFullscreenGpsLoading] = useState(false)
+
+  // Lock body scroll when fullscreen map is open
+  useEffect(() => {
+    document.body.style.overflow = mapFullscreen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [mapFullscreen])
+
+  // Close fullscreen on Escape key
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mapFullscreen) setMapFullscreen(false)
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [mapFullscreen])
 
   const handleCategorySelect = (cat: string) => {
     setForm((f) => ({ ...f, category: cat }))
@@ -209,12 +249,50 @@ export default function CitizenForm() {
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
         }))
+        setGpsTrigger((t) => t + 1) // signal map to fly to GPS coords
         setStatus('idle')
       },
       () => {
         setErrorMsg('Unable to retrieve your location. Please allow location access.')
         setStatus('error')
       },
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
+  }
+
+  const handleMapLocationChange = (lat: number, lng: number) => {
+    setForm((f) => ({ ...f, latitude: lat, longitude: lng }))
+    if (errorMsg) setErrorMsg('')
+  }
+
+  // ── Fullscreen map handlers ───────────────────────────────────────────────
+  const openFullscreenMap = () => {
+    setTempLat(form.latitude)
+    setTempLng(form.longitude)
+    setTempGpsTrigger(0)
+    setMapFullscreen(true)
+  }
+
+  const confirmFullscreenLocation = () => {
+    if (tempLat !== null && tempLng !== null) {
+      setForm((f) => ({ ...f, latitude: tempLat, longitude: tempLng }))
+      setGpsTrigger((t) => t + 1) // sync the inline map to confirmed coords
+      if (errorMsg) setErrorMsg('')
+    }
+    setMapFullscreen(false)
+  }
+
+  const handleFullscreenGPS = () => {
+    if (!navigator.geolocation) return
+    setFullscreenGpsLoading(true)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setTempLat(pos.coords.latitude)
+        setTempLng(pos.coords.longitude)
+        setTempGpsTrigger((t) => t + 1)
+        setFullscreenGpsLoading(false)
+      },
+      () => { setFullscreenGpsLoading(false) },
       { enableHighAccuracy: true, timeout: 10000 }
     )
   }
@@ -245,7 +323,7 @@ export default function CitizenForm() {
     if (!form.description.trim()) return setErrorMsg('Please provide a description.')
     if (!form.barangay) return setErrorMsg('Please select a barangay.')
     if (form.latitude === null || form.longitude === null)
-      return setErrorMsg('Please get your location first.')
+      return setErrorMsg('Please tap the map or use GPS to set your location.')
 
     let image_url: string | null = null
 
@@ -267,14 +345,18 @@ export default function CitizenForm() {
     }
 
     setStatus('submitting')
-    const { error: insertError } = await supabase.from('reports').insert({
-      category: form.category,
-      description: form.description,
-      barangay: form.barangay,
-      latitude: form.latitude,
-      longitude: form.longitude,
-      image_url,
-    })
+    const { data: insertData, error: insertError } = await supabase
+      .from('reports')
+      .insert({
+        category: form.category,
+        description: form.description,
+        barangay: form.barangay,
+        latitude: form.latitude,
+        longitude: form.longitude,
+        image_url,
+      })
+      .select()
+      .single()
 
     if (insertError) {
       setErrorMsg(`Submission failed: ${insertError.message}`)
@@ -282,32 +364,83 @@ export default function CitizenForm() {
       return
     }
 
+    setReportId(insertData?.id ?? null)
+    setReportCategory(form.category)
+    setCountdown(8)
     setStatus('success')
-    setTimeout(() => {
-      setForm({
-        category: '',
-        description: '',
-        barangay: '',
-        latitude: null,
-        longitude: null,
-        imageFile: null,
-        imagePreview: null,
-      })
-      setStatus('idle')
-    }, 3000)
+
+    // Countdown then reset
+    let secs = 8
+    const interval = setInterval(() => {
+      secs -= 1
+      setCountdown(secs)
+      if (secs <= 0) {
+        clearInterval(interval)
+        setForm({
+          category: '',
+          description: '',
+          barangay: '',
+          latitude: null,
+          longitude: null,
+          imageFile: null,
+          imagePreview: null,
+        })
+        setReportId(null)
+        setReportCategory('')
+        setStatus('idle')
+      }
+    }, 1000)
   }
 
   if (status === 'success') {
+    const cat = CATEGORIES.find((c) => c.label === reportCategory)
+    const CatIcon = cat?.icon
     return (
-      <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-        <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-400/50 dark:border-green-500/40 flex items-center justify-center">
+      <div className="bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-8 flex flex-col items-center gap-5 text-center">
+        {/* Animated check */}
+        <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 border-2 border-green-400/60 dark:border-green-500/40 flex items-center justify-center">
           <CheckCircle size={40} className="text-green-600 dark:text-green-400" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Report Submitted!</h2>
-        <p className="text-gray-600 dark:text-gray-400 max-w-xs">
-          Your emergency report has been sent to the Ligao City CDRRMO. Help is on the way.
+
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Report Submitted!</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+            Your report has been sent to the <span className="font-semibold text-gray-700 dark:text-gray-200">Ligao City CDRRMO</span>. Help is on the way.
+          </p>
+        </div>
+
+        {/* Report reference */}
+        {reportId && (
+          <div className="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+            <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">Reference No.</p>
+            <p className="font-mono text-base font-bold text-gray-800 dark:text-gray-100 tracking-widest">
+              #{reportId.slice(0, 8).toUpperCase()}
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Keep this for follow-up with CDRRMO</p>
+          </div>
+        )}
+
+        {/* Category echo */}
+        {cat && CatIcon && (
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <CatIcon size={16} />
+            <span>Incident type: <span className="font-semibold text-gray-800 dark:text-gray-200">{reportCategory}</span></span>
+          </div>
+        )}
+
+        {/* 911 reminder */}
+        <div className="w-full bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-xl px-4 py-3">
+          <p className="text-xs text-red-700 dark:text-red-300">
+            If this is life-threatening, call{' '}
+            <a href="tel:911" className="font-bold text-red-600 dark:text-red-400 underline">911</a>{' '}
+            immediately — don't wait for a response.
+          </p>
+        </div>
+
+        {/* Countdown */}
+        <p className="text-xs text-gray-400 dark:text-gray-600">
+          Form resets in <span className="font-semibold text-gray-500 dark:text-gray-400">{countdown}s</span>
         </p>
-        <p className="text-xs text-gray-400 dark:text-gray-600">Resetting form…</p>
       </div>
     )
   }
@@ -315,7 +448,8 @@ export default function CitizenForm() {
   const isLoading = status === 'locating' || status === 'uploading' || status === 'submitting'
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <>
+      <form onSubmit={handleSubmit} className="space-y-5">
 
       {/* Error banner */}
       {errorMsg && (
@@ -325,11 +459,14 @@ export default function CitizenForm() {
         </div>
       )}
 
-      {/* Category Selection — 3 cols on mobile, 6 cols on md+ */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 transition-colors">
-          Incident Type <span className="text-red-500 dark:text-red-400">*</span>
-        </label>
+      {/* ── Step 1: Incident Type ─────────────────────────── */}
+      <div className="bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-4 md:p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
+          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors">
+            Incident Type <span className="text-red-500 dark:text-red-400">*</span>
+          </label>
+        </div>
         <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
           {CATEGORIES.map((cat) => (
             <button
@@ -339,7 +476,7 @@ export default function CitizenForm() {
               className={`flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all duration-200 text-xs font-semibold
                 ${form.category === cat.label
                   ? `bg-gradient-to-b ${cat.color} border-white/30 text-white scale-105 shadow-lg`
-                  : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 hover:border-red-300 dark:hover:border-gray-500 hover:text-gray-900 dark:hover:text-gray-200 shadow-sm dark:shadow-none'
+                  : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 hover:border-red-300 dark:hover:border-gray-500 hover:text-gray-900 dark:hover:text-gray-200 shadow-sm dark:shadow-none'
                 }`}
               id={`category-${cat.label.replace(/\s/g, '-').toLowerCase()}`}
             >
@@ -350,104 +487,160 @@ export default function CitizenForm() {
         </div>
       </div>
 
-      {/* Barangay + Description — 1 col on mobile, 2 cols on md+ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-            Barangay <span className="text-red-500 dark:text-red-400">*</span>
-          </label>
-          <BarangaySelect
-            value={form.barangay}
-            onChange={(val) => setForm((f) => ({ ...f, barangay: val }))}
-          />
+      {/* ── Step 2: Location Details ──────────────────────── */}
+      <div className="bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-4 md:p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Location Details</span>
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              Barangay <span className="text-red-500 dark:text-red-400">*</span>
+            </label>
+            <BarangaySelect
+              value={form.barangay}
+              onChange={(val) => setForm((f) => ({ ...f, barangay: val }))}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="description" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-            Description <span className="text-red-500 dark:text-red-400">*</span>
-          </label>
-          <textarea
-            id="description"
-            rows={4}
-            placeholder="Briefly describe the emergency situation…"
-            value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700
-              rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm
-              placeholder:text-gray-400 dark:placeholder:text-gray-600
-              focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 resize-none transition-colors"
-          />
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label htmlFor="description" className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Description <span className="text-red-500 dark:text-red-400">*</span>
+              </label>
+              <span className={`text-xs font-medium tabular-nums ${
+                form.description.length > MAX_DESC * 0.9
+                  ? 'text-red-500 dark:text-red-400'
+                  : 'text-gray-400 dark:text-gray-500'
+              }`}>
+                {form.description.length}/{MAX_DESC}
+              </span>
+            </div>
+            <textarea
+              id="description"
+              rows={4}
+              maxLength={MAX_DESC}
+              placeholder="Briefly describe the emergency situation…"
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700
+                rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm
+                placeholder:text-gray-400 dark:placeholder:text-gray-600
+                focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 resize-none transition-colors"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Location + Photo — 1 col on mobile, 2 cols on md+ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-            Your Location <span className="text-red-500 dark:text-red-400">*</span>
-          </label>
-          <button
-            type="button"
-            id="get-location-btn"
-            onClick={handleGetLocation}
-            disabled={status === 'locating'}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-semibold transition-all duration-200
-              ${form.latitude !== null
-                ? 'border-green-400/60 dark:border-green-500/60 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800/50 text-gray-600 dark:text-gray-300 hover:border-red-300 dark:hover:border-gray-500'
-              } disabled:opacity-60 disabled:cursor-not-allowed`}
-          >
-            {status === 'locating' ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <MapPin size={16} />
-            )}
-            {status === 'locating'
-              ? 'Locating…'
-              : form.latitude !== null
-              ? `${form.latitude.toFixed(5)}, ${form.longitude!.toFixed(5)}`
-              : 'Get My Current Location'}
-          </button>
+      {/* ── Step 3: Location & Map ──────────────────────── */}
+      <div className="bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-4 md:p-5">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
+            <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              Your Location <span className="text-red-500 dark:text-red-400">*</span>
+            </label>
+          </div>
+          {/* Right side: GPS chip + Full Map button */}
+          <div className="flex items-center gap-2">
+            {/* GPS quick-detect button */}
+            <button
+              type="button"
+              id="get-location-btn"
+              onClick={handleGetLocation}
+              disabled={status === 'locating'}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all duration-200
+                ${form.latitude !== null
+                  ? 'border-green-400/60 dark:border-green-500/60 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                  : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-red-400 dark:hover:border-gray-500'
+                } disabled:opacity-60 disabled:cursor-not-allowed`}
+            >
+              {status === 'locating' ? (
+                <Loader2 size={13} className="animate-spin" />
+              ) : (
+                <MapPin size={13} />
+              )}
+              {status === 'locating'
+                ? 'Locating…'
+                : form.latitude !== null
+                ? '✓ GPS Located'
+                : 'Use GPS'}
+            </button>
+            {/* Full-screen map button */}
+            <button
+              type="button"
+              id="fullscreen-map-btn"
+              onClick={openFullscreenMap}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-red-400 dark:hover:border-gray-500 text-xs font-semibold transition-all duration-200"
+            >
+              <Maximize2 size={13} />
+              Full Map
+            </button>
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+        {/* Leaflet map */}
+        <ReportMap
+          latitude={form.latitude}
+          longitude={form.longitude}
+          gpsTrigger={gpsTrigger}
+          onLocationChange={handleMapLocationChange}
+        />
+
+        {/* Coordinate badge shown below map when location is set */}
+        {form.latitude !== null && (
+          <div className="mt-2 flex items-center gap-1.5">
+            <MapPin size={12} className="text-green-600 dark:text-green-400 shrink-0" />
+            <span className="text-xs text-green-700 dark:text-green-400 font-mono">
+              {form.latitude.toFixed(6)}, {form.longitude!.toFixed(6)}
+            </span>
+            <span className="text-xs text-gray-400 dark:text-gray-500 ml-1">— drag pin to adjust</span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Step 4: Photo ──────────────────────────────── */}
+      <div className="bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-4 md:p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="w-5 h-5 rounded-full bg-gray-400 dark:bg-gray-600 text-white text-xs font-bold flex items-center justify-center shrink-0">4</span>
+          <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
             Photo <span className="text-gray-400 dark:text-gray-500 font-normal">(optional, max 5MB)</span>
           </label>
-          {form.imagePreview ? (
-            <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={form.imagePreview} alt="Preview" className="w-full h-48 object-cover" />
-              <button
-                type="button"
-                onClick={clearImage}
-                className="absolute top-2 right-2 bg-gray-900/80 rounded-full p-1 hover:bg-red-900/80 transition-colors"
-              >
-                <X size={16} className="text-white" />
-              </button>
-            </div>
-          ) : (
-            <label
-              htmlFor="photo-upload"
-              className="flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed
-                border-gray-300 dark:border-gray-700
-                bg-gray-50 dark:bg-gray-800/30
-                cursor-pointer hover:border-red-300 dark:hover:border-gray-500
-                hover:bg-red-50/50 dark:hover:bg-gray-800/60 transition-all"
-            >
-              <Upload size={24} className="text-gray-400 dark:text-gray-500" />
-              <span className="text-gray-500 dark:text-gray-500 text-sm">Tap to upload a photo</span>
-              <input
-                id="photo-upload"
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={handleImageChange}
-              />
-            </label>
-          )}
         </div>
+        {form.imagePreview ? (
+          <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={form.imagePreview} alt="Preview" className="w-full h-48 object-cover" />
+            <button
+              type="button"
+              onClick={clearImage}
+              className="absolute top-2 right-2 bg-gray-900/80 rounded-full p-1 hover:bg-red-900/80 transition-colors"
+            >
+              <X size={16} className="text-white" />
+            </button>
+          </div>
+        ) : (
+          <label
+            htmlFor="photo-upload"
+            className="flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed
+              border-gray-300 dark:border-gray-700
+              bg-gray-50 dark:bg-gray-800/30
+              cursor-pointer hover:border-red-300 dark:hover:border-gray-500
+              hover:bg-red-50/50 dark:hover:bg-gray-800/60 transition-all"
+          >
+            <Upload size={24} className="text-gray-400 dark:text-gray-500" />
+            <span className="text-gray-500 dark:text-gray-500 text-sm">Tap to upload a photo</span>
+            <input
+              id="photo-upload"
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handleImageChange}
+            />
+          </label>
+        )}
       </div>
 
       {/* Submit */}
@@ -469,6 +662,78 @@ export default function CitizenForm() {
           <><Send size={18} />Submit Emergency Report</>
         )}
       </button>
-    </form>
+      </form>
+
+      {/* Full-screen Map Modal */}
+      {mapFullscreen && (
+        <div className="fixed inset-0 z-[9999] flex flex-col bg-white dark:bg-gray-950">
+
+          {/* Top bar */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shrink-0">
+            <button
+              type="button"
+              onClick={() => setMapFullscreen(false)}
+              className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              <ArrowLeft size={18} />
+              <span className="text-sm font-medium">Back</span>
+            </button>
+
+            <p className="text-sm font-bold text-gray-800 dark:text-white">Pin Your Location</p>
+
+            <button
+              type="button"
+              onClick={confirmFullscreenLocation}
+              disabled={tempLat === null}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-all"
+            >
+              Confirm
+            </button>
+          </div>
+
+          {/* GPS strip */}
+          <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60 shrink-0">
+            <button
+              type="button"
+              onClick={handleFullscreenGPS}
+              disabled={fullscreenGpsLoading}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm font-semibold hover:border-red-400 dark:hover:border-gray-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+            >
+              {fullscreenGpsLoading ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <MapPin size={15} className="text-red-500" />
+              )}
+              {fullscreenGpsLoading ? 'Getting your location…' : 'Use My GPS Location'}
+            </button>
+          </div>
+
+          {/* Full-height map */}
+          <div className="flex-1 relative overflow-hidden">
+            <ReportMap
+              latitude={tempLat}
+              longitude={tempLng}
+              gpsTrigger={tempGpsTrigger}
+              onLocationChange={(lat, lng) => { setTempLat(lat); setTempLng(lng) }}
+              fullHeight
+            />
+          </div>
+
+          {/* Bottom coordinate bar */}
+          <div className={`px-4 py-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 shrink-0 transition-all duration-300 ${
+            tempLat !== null ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}>
+            <div className="flex items-center gap-2">
+              <MapPin size={14} className="text-green-600 dark:text-green-400 shrink-0" />
+              <span className="text-xs font-mono text-green-700 dark:text-green-400">
+                {tempLat?.toFixed(6)}, {tempLng?.toFixed(6)}
+              </span>
+              <span className="text-xs text-gray-400 dark:text-gray-500 ml-1">— drag pin to adjust</span>
+            </div>
+          </div>
+
+        </div>
+      )}
+    </>
   )
 }
