@@ -1,59 +1,119 @@
-# 🆘 BayaniLink — Ligao City Emergency Reporting System
+<!-- prettier-ignore -->
+<div align="center">
 
-> A real-time emergency reporting web application for **Ligao City, Albay, Philippines**, connecting citizens directly to the City Disaster Risk Reduction and Management Office (CDRRMO).
+<img src="./public/BayaniLink.png" alt="BayaniLink Logo" align="center" height="72" />
 
----
+# BayaniLink
 
-## 📋 Overview
+### Ligao City Emergency Reporting System
 
-**BayaniLink** is a responsive full-stack web application built to improve emergency response times in Ligao City. Citizens can submit geo-tagged incident reports from their mobile devices, while LGU personnel monitor and manage all incoming reports through a real-time admin dashboard.
+[![Next.js](https://img.shields.io/badge/Next.js-16.2-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=flat-square&logo=supabase)](https://supabase.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-The name *"BayaniLink"* comes from the Filipino word **"Bayanihan"** (community spirit of helping one another) and **"link"** — representing the connection between citizens and their local government during emergencies.
+A real-time emergency reporting web application for **Ligao City, Albay, Philippines**, connecting citizens directly to the City Disaster Risk Reduction and Management Office (CDRRMO).
 
----
+[Overview](#overview) • [Features](#features) • [Project Structure](#project-structure) • [Development Roadmap](#development-roadmap) • [Getting Started](#getting-started) • [Tech Stack](#tech-stack) • [Emergency Hotlines](#emergency-hotlines)
 
-## ✨ Features
-
-### 👥 Citizen Interface (Mobile-First)
-- 📍 **GPS Location Detection** — Automatically fetches the reporter's current coordinates via the browser Geolocation API
-- 🗂️ **Incident Categories** — Flood, Fire, Crash, Dangling Wire, Medical, Other
-- 🏘️ **Barangay Selection** — All 52 barangays of Ligao City are listed
-- 📷 **Photo Upload** — Upload incident photos directly to Supabase Storage
-- 🌙 **Dark / Light Mode** — Smooth theme toggle saved to local storage
-- 📞 **Quick Dial** — Floating button with one-tap access to Ligao City emergency hotlines (CDRRMO, Fire, PNP, Red Cross, 911)
-
-### 🗺️ Mapping Component *(Phase 3 — In Progress)*
-- Interactive Leaflet map with a draggable pin for precise incident location marking
-
-### 🤖 AI Triage Assistant *(Phase 4 — Upcoming)*
-- Collapsible chatbot powered by the **Gemini API**
-- Provides first aid guidance and app usage instructions
-- Enforced safety prompt: always directs life-threatening situations to Quick Dial
-
-### 🖥️ LGU Admin Dashboard *(Phase 5 — Upcoming)*
-- Secured login for CDRRMO personnel
-- Real-time split-screen: filterable report list + live map with colored status pins
-- One-click status updates (Submitted → In Progress → Resolved) with Supabase real-time subscriptions
-- Incident analytics summary
+</div>
 
 ---
 
-## 🛠️ Tech Stack
+## Overview
 
-| Layer | Technology |
-|---|---|
-| **Framework** | [Next.js 16](https://nextjs.org/) (App Router, TypeScript) |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) |
-| **Database** | [Supabase](https://supabase.com/) (PostgreSQL + Real-time) |
-| **Storage** | Supabase Storage Buckets |
-| **Maps** | [Leaflet.js](https://leafletjs.com/) + [React Leaflet](https://react-leaflet.js.org/) |
-| **AI** | [Google Gemini API](https://ai.google.dev/) via Next.js Route Handlers |
-| **Theming** | [next-themes](https://github.com/pacocoursey/next-themes) |
-| **Icons** | [Lucide React](https://lucide.dev/) |
+**BayaniLink** is a responsive full-stack web application designed to improve emergency response times in Ligao City. Citizens can submit geo-tagged incident reports from their mobile devices, while local government unit (LGU) personnel monitor and manage all incoming reports through a real-time admin dashboard.
+
+The name *"BayaniLink"* is a portmanteau of the Filipino word **"Bayanihan"** (the community spirit of unity and cooperation) and **"link"** — representing the connection between citizens and their local government during critical situations.
+
+## Features
+
+- **📍 GPS Location Detection**: Automatically retrieves the reporter's current coordinates via the browser's Geolocation API.
+- **🗺️ Interactive Map (Phase 3)**: Incorporates a Leaflet map with a draggable pin for precise incident location marking.
+- **🗂️ Categorized Incidents**: Predefined incident categories (e.g., Flood, Fire, Crash, Dangling Wire, Medical, and Other).
+- **🏘️ Searchable Barangay Selection**: Live search dropdown containing all 52 barangays of Ligao City.
+- **📷 Photo Upload**: Allows citizens to upload incident photos directly to a public Supabase Storage bucket.
+- **🌙 Theme Toggle**: Persistent dark and light mode toggle saved to local storage for usability in low-light environments.
+- **📞 Quick Dial Panel**: Floating button with one-tap access to local emergency hotlines (CDRRMO, Fire, PNP, Red Cross, 911).
+
+## Project Structure
+
+```text
+my-emergency-app/
+├── src/
+│   ├── app/
+│   │   ├── globals.css             # Tailwind CSS configuration and theme styles
+│   │   ├── layout.tsx              # Application layout with next-themes provider
+│   │   └── page.tsx                # Citizen reporting homepage (mobile-first)
+│   ├── components/
+│   │   ├── BarangaySelect.tsx      # Searchable barangay dropdown selection
+│   │   ├── CitizenForm.tsx         # Main multi-step emergency reporting form
+│   │   ├── QuickDial.tsx           # Floating speed dial for hotlines
+│   │   ├── ReportMap.tsx           # Leaflet map component with draggable pin
+│   │   ├── ThemeProvider.tsx       # next-themes integration provider
+│   │   └── ThemeToggle.tsx         # Light/dark mode button
+│   ├── lib/
+│   │   └── supabaseClient.ts       # Supabase Client initialization
+│   └── types/
+│       └── database.types.ts       # Typed Supabase schema bindings
+├── public/
+│   └── BayaniLink.png              # App logo asset
+└── package.json                    # Project scripts & dependencies
+```
+
+## Development Roadmap
+
+| Phase | Component | Description | Status |
+| :---: | :--- | :--- | :---: |
+| **1** | **Foundation** | Next.js boilerplate, Supabase client, DB schema, and TypeScript types | ✅ Complete |
+| **2** | **Citizen Interface** | Report form, photo capture & upload, Quick Dial hotline buttons | ✅ Complete |
+| **3** | **Mapping Component** | Leaflet interactive map integration with draggable pin positioning | 🔄 In Progress |
+| **4** | **AI Triage Assistant** | Collapsible Gemini-powered chatbot for safety instructions | 🔲 Upcoming |
+| **5** | **Admin Dashboard** | Real-time split-screen report dashboard and analytics | 🔲 Upcoming |
 
 ---
 
-## 🗄️ Database Schema
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** v18 or higher installed on your system.
+- A **Supabase** account and project initialized.
+- A **Google AI Studio** API key (needed for the upcoming Phase 4).
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/KuraiKutsuki/BayaniLink.git
+cd BayaniLink/my-emergency-app
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Set Up Environment Variables
+
+Create a `.env.local` file in the root of the `my-emergency-app` folder:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# (Phase 4) Gemini API Key
+GEMINI_API_KEY=your_gemini_api_key
+
+# (Phase 5) Admin Auth Credentials
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD=your_admin_password
+```
+
+### 4. Set Up Supabase
+
+#### Database Schema
+Run the following SQL script in your Supabase SQL Editor to set up the reports table and real-time subscriptions:
 
 ```sql
 -- Incident status enum
@@ -72,134 +132,65 @@ CREATE TABLE public.reports (
     status report_status DEFAULT 'Submitted'::report_status NOT NULL
 );
 
--- Enable real-time replication
+-- Enable real-time replication for reports
 ALTER PUBLICATION supabase_realtime ADD TABLE public.reports;
 ```
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+
-- A [Supabase](https://supabase.com/) project with the schema above
-- (Phase 4) A [Google AI Studio](https://aistudio.google.com/app/apikey) API key
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/KuraiKutsuki/BayaniLink.git
-cd BayaniLink/my-emergency-app
-```
-
-### 2. Install dependencies
-```bash
-npm install
-```
-
-### 3. Set up environment variables
-Create a `.env.local` file in the project root:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Added in Phase 4
-GEMINI_API_KEY=your_gemini_api_key
-
-# Added in Phase 5
-ADMIN_USERNAME=your_admin_username
-ADMIN_PASSWORD=your_admin_password
-```
-
-### 4. Set up Supabase
-Run the database schema SQL in your Supabase SQL Editor, then:
-- Create a **Storage Bucket** named `incident-photos` (set to public)
-- Add the following **RLS Policies**:
+#### Row-Level Security (RLS) Policies
+Apply the following policies to secure data access:
 
 ```sql
--- Allow public inserts on reports
+-- Allow anonymous inserts on reports
 CREATE POLICY "Allow public inserts" ON public.reports FOR INSERT TO anon WITH CHECK (true);
 
--- Allow public reads on reports
+-- Allow anonymous reads on reports
 CREATE POLICY "Allow public reads" ON public.reports FOR SELECT TO anon USING (true);
 
--- Allow public updates on reports (for admin status changes)
+-- Allow anonymous updates on reports (admin dashboard status changes)
 CREATE POLICY "Allow public updates" ON public.reports FOR UPDATE TO anon USING (true) WITH CHECK (true);
 
--- Allow anonymous uploads to incident-photos bucket
+-- Allow anonymous uploads to the incident-photos storage bucket
 CREATE POLICY "Allow public uploads" ON storage.objects FOR INSERT TO anon WITH CHECK (bucket_id = 'incident-photos');
 ```
 
-### 5. Run the development server
+> [!IMPORTANT]
+> Make sure to create a **Storage Bucket** named `incident-photos` inside your Supabase project dashboard and configure it as **Public**.
+
+### 5. Run the Local Development Server
+
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+## Tech Stack
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Framework** | Next.js 16 (App Router) | React Server Components, Routing, and API Handlers |
+| **Language** | TypeScript | Strong typing and compiler safety |
+| **Styling** | Tailwind CSS v4.0 | Modern utility-first layout styling |
+| **Database** | Supabase (PostgreSQL) | Data persistence, real-time sync, and file storage |
+| **Mapping** | Leaflet.js / React Leaflet | Interactive coordinate selection map |
+| **Theming** | next-themes | Light/dark mode propagation |
+| **Icons** | Lucide React | Clean, scalable vector iconography |
+
+## Emergency Hotlines
+
+For immediate voice contact with responders in Ligao City, Albay:
+
+*   **CDRRMO Ligao City:** (052) 481-0012
+*   **Ligao City Fire Station:** (052) 481-0624
+*   **Ligao City PNP:** (052) 481-0035
+*   **Emergency / Rescue:** 911
+*   **Red Cross Albay:** (052) 820-3232
+
+> [!WARNING]
+> In life-threatening emergencies, do not wait for the application to process your report. Dial **911** or contact the CDRRMO directly.
 
 ---
 
-## 📁 Project Structure
-
-```
-my-emergency-app/
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx              # Root layout with ThemeProvider
-│   │   ├── page.tsx                # Citizen reporting home page (mobile-first)
-│   │   ├── globals.css             # Tailwind v4 + dark mode styles
-│   │   ├── admin/
-│   │   │   ├── page.tsx            # Admin dashboard (Phase 5)
-│   │   │   └── login/
-│   │   │       └── page.tsx        # LGU admin login (Phase 5)
-│   │   └── api/
-│   │       └── chat/
-│   │           └── route.ts        # Gemini AI route handler (Phase 4)
-│   ├── components/
-│   │   ├── CitizenForm.tsx         # Main report submission form
-│   │   ├── QuickDial.tsx           # Floating emergency hotlines button
-│   │   ├── ThemeProvider.tsx       # next-themes wrapper
-│   │   ├── ThemeToggle.tsx         # Dark/light mode toggle button
-│   │   ├── ReportMap.tsx           # Leaflet map component (Phase 3)
-│   │   ├── Chatbot.tsx             # AI triage assistant UI (Phase 4)
-│   │   ├── AdminDashboard.tsx      # Report management panel (Phase 5)
-│   │   └── AnalyticsCharts.tsx     # Incident analytics charts (Phase 5)
-│   ├── lib/
-│   │   └── supabaseClient.ts       # Supabase client instance
-│   └── types/
-│       └── database.types.ts       # TypeScript DB interfaces
-└── .env.local                      # Environment variables (gitignored)
-```
-
----
-
-## 📞 Emergency Hotlines (Ligao City)
-
-| Agency | Number |
-|---|---|
-| CDRRMO Ligao City | (052) 481-0012 |
-| Ligao City Fire Station | (052) 481-0624 |
-| Ligao City PNP | (052) 481-0035 |
-| Emergency / Rescue | 911 |
-| Red Cross Albay | (052) 820-3232 |
-
----
-
-## 🗺️ Development Phases
-
-| Phase | Description | Status |
-|---|---|---|
-| 1 | Foundation — Next.js setup, Supabase client, DB types | ✅ Complete |
-| 2 | Citizen Interface — Report form, photo upload, Quick Dial | ✅ Complete |
-| 3 | Mapping Component — Leaflet map with draggable pin | 🔄 In Progress |
-| 4 | AI Triage Assistant — Gemini chatbot route + UI | 🔲 Upcoming |
-| 5 | Admin Dashboard — Real-time management, analytics | 🔲 Upcoming |
-
----
-
-## 📄 License
-
-This project was developed as a prototype for Ligao City, Albay, Philippines. All rights reserved.
-
----
-
-*Built with ❤️ for the people of Ligao City by the BayaniLink team.*
+<div align="center">
+<i>Built with ❤️ for the people of Ligao City by the BayaniLink team.</i>
+</div>
