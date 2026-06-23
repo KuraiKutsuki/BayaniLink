@@ -68,8 +68,11 @@ my-emergency-app/
 | **1** | **Foundation** | Next.js boilerplate, Supabase client, DB schema, and TypeScript types | ✅ Complete |
 | **2** | **Citizen Interface** | Report form, photo capture & upload, Quick Dial hotline buttons | ✅ Complete |
 | **3** | **Mapping Component** | Leaflet interactive map integration with draggable pin positioning | 🔄 In Progress |
-| **4** | **AI Triage Assistant** | Collapsible Gemini-powered chatbot for safety instructions | 🔲 Upcoming |
-| **5** | **Admin Dashboard** | Real-time split-screen report dashboard and analytics | 🔲 Upcoming |
+| **4** | **Landing Page & Navigation** | Dedicated Homepage, Hamburger Menu, Safety Guidelines, Hotlines | 🔲 Upcoming |
+| **5** | **Authentication & Roles** | Secure access control for the upcoming admin dashboard | 🔲 Upcoming |
+| **6** | **Data Validation** | Spam prevention and strict validation for reports | 🔲 Upcoming |
+| **7** | **AI Triage Assistant** | Collapsible Gemini-powered chatbot for safety instructions | 🔲 Upcoming |
+| **8** | **Admin Dashboard** | Real-time dashboard, fully responsive for desktop & mobile | 🔲 Upcoming |
 
 ---
 
@@ -192,5 +195,5 @@ For immediate voice contact with responders in Ligao City, Albay:
 ---
 
 <div align="center">
-<i>Built with ❤️ for the people of Ligao City by the BayaniLink team.</i>
+<i>Built with ❤️ for the people of Ligao City, designed and developed entirely by a solo developer.</i>
 </div>

@@ -45,3 +45,6 @@ certificates
 # AI Config
 .agents/
 skills-lock.json
+
+# Local Documentation
+IMPLEMENTATION_PLAN.md
