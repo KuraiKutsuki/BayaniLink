@@ -35,9 +35,8 @@ export default function QuickDial() {
 
       {/* Panel */}
       <div
-        className={`fixed bottom-20 right-4 z-50 w-72 rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-out ${
-          open ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
-        }`}
+        className={`fixed bottom-20 right-4 z-50 w-72 rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-out ${open ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
+          }`}
       >
         <div className="bg-gradient-to-br from-red-700 to-red-900 px-4 py-3 flex items-center justify-between">
           <span className="flex items-center gap-2 text-white font-bold text-sm tracking-wide">
@@ -49,11 +48,13 @@ export default function QuickDial() {
           </button>
         </div>
         <div className="bg-gray-900 divide-y divide-gray-800">
-          {hotlines.map((h) => (
+          {hotlines.map((h, idx) => (
             <a
               key={h.number}
               href={`tel:${h.number.replace(/[^0-9+]/g, '')}`}
-              className="flex items-center justify-between px-4 py-3 hover:bg-gray-800 transition-colors group"
+              style={{ animationDelay: `${idx * 60}ms` }}
+              className={`flex items-center justify-between px-4 py-3 hover:bg-gray-800 transition-all duration-200 group
+                ${open ? 'animate-hotline-in opacity-0' : 'opacity-0 pointer-events-none'}`}
             >
               <div>
                 <p className="text-white text-xs font-semibold group-hover:text-red-400 transition-colors">
@@ -61,7 +62,7 @@ export default function QuickDial() {
                 </p>
                 <p className="text-gray-400 text-xs mt-0.5">{h.number}</p>
               </div>
-              <Phone size={14} className="text-red-400 group-hover:text-red-300 transition-colors" />
+              <Phone size={14} className="text-red-400 group-hover:text-red-300 transition-colors group-hover:scale-110 duration-200" />
             </a>
           ))}
         </div>

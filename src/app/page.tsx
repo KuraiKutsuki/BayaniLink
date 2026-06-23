@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800/50 transition-colors duration-300">
+      <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800/50 transition-colors duration-300">
         <div className="max-w-screen-lg mx-auto px-4 py-3 flex items-center gap-3">
           <div className="w-9 h-9 flex items-center justify-center shrink-0">
             <Image src="/BayaniLink.png" alt="BayaniLink Logo" width={36} height={36} priority style={{ width: '36px', height: '36px' }} />
