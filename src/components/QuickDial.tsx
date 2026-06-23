@@ -23,6 +23,17 @@ export default function QuickDial() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
+  // Close hotlines panel if the mobile nav menu is opened
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      if (document.body.classList.contains('menu-open')) {
+        setOpen(false)
+      }
+    })
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <>
       {/* Backdrop */}

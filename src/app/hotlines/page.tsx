@@ -1,4 +1,5 @@
 import { Phone, Shield, Flame, Activity, Zap, Heart, ShieldAlert, Award } from 'lucide-react'
+import ScrollReveal from '../../components/ScrollReveal'
 
 const AGENCIES = [
   {
@@ -82,46 +83,51 @@ export default function HotlinesPage() {
       {/* Directory Grid */}
       <div className="max-w-screen-lg mx-auto px-4 py-8 pb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {AGENCIES.map((agency) => {
+          {AGENCIES.map((agency, index) => {
             const Icon = agency.icon
+            const col = index % 2
+            const row = Math.floor(index / 2)
+            const desktopDelay = (row + col) * 100
+            const delay = index === 1 ? 100 : 0
             return (
-              <div 
-                key={agency.name}
-                className={`backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border rounded-3xl p-6 shadow-xl shadow-gray-200/5 dark:shadow-none transition-all duration-300 flex flex-col justify-between ${agency.accent}`}
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-3 mb-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-200/60 dark:border-gray-700">
-                      {agency.type}
-                    </span>
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-gray-800 border border-current shadow-sm">
-                      <Icon size={16} className="stroke-[2.5]" />
-                    </div>
-                  </div>
-                  <h3 className="font-extrabold text-gray-900 dark:text-white text-base leading-tight">
-                    {agency.name}
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs mt-2 leading-relaxed">
-                    {agency.description}
-                  </p>
-                </div>
-
-                {/* Call Action Bar */}
-                <div className="mt-6 pt-4 border-t border-gray-200/40 dark:border-gray-800/40 flex items-center justify-between gap-4">
+              <ScrollReveal key={agency.name} delay={delay} desktopDelay={desktopDelay}>
+                <div 
+                  className={`bg-white/95 dark:bg-gray-900/95 border rounded-2xl p-6 shadow-sm transition-all duration-300 flex flex-col justify-between h-full focus-within:ring-2 focus-within:ring-red-500/20 ${agency.accent}`}
+                >
                   <div>
-                    <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold block">Hotline Number</span>
-                    <span className="text-base font-extrabold text-gray-900 dark:text-white font-mono mt-0.5 block tracking-wide">
-                      {agency.number}
-                    </span>
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-200/60 dark:border-gray-700">
+                        {agency.type}
+                      </span>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-white dark:bg-gray-800 border border-current shadow-sm">
+                        <Icon size={16} className="stroke-[2.5]" />
+                      </div>
+                    </div>
+                    <h3 className="font-extrabold text-gray-900 dark:text-white text-base leading-tight">
+                      {agency.name}
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs mt-2 leading-relaxed">
+                      {agency.description}
+                    </p>
                   </div>
-                  <a
-                    href={`tel:${agency.number.replace(/[^0-9+]/g, '')}`}
-                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold text-xs shadow-md shadow-red-600/10 hover:shadow-red-500/20 hover:scale-[1.03] active:scale-97 transition-all flex items-center gap-1.5 shrink-0"
-                  >
-                    <Phone size={12} className="stroke-[2.5]" /> Call Now
-                  </a>
+
+                  {/* Call Action Bar */}
+                  <div className="mt-6 pt-4 border-t border-gray-200/40 dark:border-gray-800/40 flex items-center justify-between gap-4">
+                    <div>
+                      <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold block">Hotline Number</span>
+                      <span className="text-base font-extrabold text-gray-900 dark:text-white font-mono mt-0.5 block tracking-wide">
+                        {agency.number}
+                      </span>
+                    </div>
+                    <a
+                      href={`tel:${agency.number.replace(/[^0-9+]/g, '')}`}
+                      className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 shrink-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-500/20 focus:outline-none"
+                    >
+                      <Phone size={12} className="stroke-[2.5]" /> Call Now
+                    </a>
+                  </div>
                 </div>
-              </div>
+              </ScrollReveal>
             )
           })}
         </div>

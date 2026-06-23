@@ -48,3 +48,8 @@ skills-lock.json
 
 # Local Documentation
 IMPLEMENTATION_PLAN.md
+DESIGN.md
+PRODUCT.md
+
+# Tool configurations & cache
+.impeccable/

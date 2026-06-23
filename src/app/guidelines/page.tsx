@@ -1,4 +1,5 @@
 import { Waves, Flame, Activity, Zap, ShieldAlert, HeartPulse, HeartHandshake } from 'lucide-react'
+import ScrollReveal from '../../components/ScrollReveal'
 
 const GUIDELINES = [
   {
@@ -107,56 +108,59 @@ export default function GuidelinesPage() {
       {/* Grid Content */}
       <div className="max-w-screen-lg mx-auto px-4 py-8 pb-20">
         <div className="grid grid-cols-1 gap-8">
-          {GUIDELINES.map((g) => {
+          {GUIDELINES.map((g, index) => {
             const Icon = g.icon
+            const delay = index === 1 ? 100 : 0
+            const desktopDelay = index * 100
             return (
-              <div 
-                key={g.title}
-                className={`backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border rounded-3xl p-6 md:p-8 shadow-xl shadow-gray-200/5 dark:shadow-none transition-all duration-300 ${g.color}`}
-              >
-                {/* Header */}
-                <div className="flex items-center gap-3.5 border-b border-gray-200/60 dark:border-gray-800/40 pb-4 mb-5">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-gray-800 border border-current shadow-sm">
-                    <Icon size={20} className="stroke-[2.5]" />
+              <ScrollReveal key={g.title} delay={delay} desktopDelay={desktopDelay}>
+                <div 
+                  className={`bg-white/95 dark:bg-gray-900/95 border rounded-2xl p-6 md:p-8 shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-red-500/20 ${g.color}`}
+                >
+                  {/* Header */}
+                  <div className="flex items-center gap-3.5 border-b border-gray-200/60 dark:border-gray-800/40 pb-4 mb-5">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-gray-800 border border-current shadow-sm">
+                      <Icon size={20} className="stroke-[2.5]" />
+                    </div>
+                    <h3 className="text-lg font-extrabold text-gray-900 dark:text-white">{g.title}</h3>
                   </div>
-                  <h3 className="text-lg font-extrabold text-gray-900 dark:text-white">{g.title}</h3>
+
+                  {/* Lists Layout */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    {/* DO list */}
+                    <div>
+                      <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-3 bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-400">
+                        ✓ What to Do
+                      </span>
+                      <ul className="space-y-2.5">
+                        {g.dos.map((item, idx) => (
+                          <li key={idx} className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed flex items-start gap-2">
+                            <span className="text-green-500 font-bold shrink-0 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* DON'T list */}
+                    <div>
+                      <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-3 bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-400">
+                        ✗ What to Avoid
+                      </span>
+                      <ul className="space-y-2.5">
+                        {g.donts.map((item, idx) => (
+                          <li key={idx} className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed flex items-start gap-2">
+                            <span className="text-red-500 font-bold shrink-0 mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                  </div>
                 </div>
-
-                {/* Lists Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  
-                  {/* DO list */}
-                  <div>
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-3 bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-400">
-                      ✓ What to Do
-                    </span>
-                    <ul className="space-y-2.5">
-                      {g.dos.map((item, idx) => (
-                        <li key={idx} className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed flex items-start gap-2">
-                          <span className="text-green-500 font-bold shrink-0 mt-0.5">•</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* DON'T list */}
-                  <div>
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-3 bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-400">
-                      ✗ What to Avoid
-                    </span>
-                    <ul className="space-y-2.5">
-                      {g.donts.map((item, idx) => (
-                        <li key={idx} className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed flex items-start gap-2">
-                          <span className="text-red-500 font-bold shrink-0 mt-0.5">•</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                </div>
-              </div>
+              </ScrollReveal>
             )
           })}
         </div>

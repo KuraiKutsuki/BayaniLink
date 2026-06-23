@@ -12,12 +12,10 @@ export default function ThemeToggle() {
     setMounted(true)
   }, [])
 
-  // Visible placeholder while JS loads — prevents invisible button on mobile
+  // Visible placeholder while JS loads — prevents invisible button on mobile and avoids theme flash
   if (!mounted) {
     return (
-      <div className="w-9 h-9 rounded-xl flex items-center justify-center border bg-gray-800 border-gray-700 text-yellow-400">
-        <Sun size={16} />
-      </div>
+      <div className="w-9 h-9 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 shrink-0" />
     )
   }
 

@@ -163,7 +163,7 @@ function BarangaySelect({ value, onChange }: BarangaySelectProps) {
                   <button
                     type="button"
                     onClick={() => handleSelect(b)}
-                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors
+                    className={`w-full text-left px-4 py-3 text-sm transition-colors focus-visible:bg-red-50 dark:focus-visible:bg-red-950/30 focus-visible:text-red-700 dark:focus-visible:text-red-400 focus:outline-none
                       ${
                         b === value
                           ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 font-semibold'
@@ -586,7 +586,10 @@ export default function CitizenForm() {
   return (
     <>
       {/* Sticky Step Progress Tracker */}
-      <div className="sticky top-[60px] z-40 -mx-4 px-4 py-2.5 md:mx-0 md:px-6 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 border-b border-gray-200/60 dark:border-gray-800/40 mb-6 transition-colors duration-300">
+      <div 
+        id="step-progress-tracker"
+        className="sticky top-[60px] z-40 -mx-4 px-4 py-2.5 md:mx-0 md:px-6 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 border-b border-gray-200/60 dark:border-gray-800/40 mb-6 transition-all duration-300"
+      >
         <div className="flex items-center justify-between w-full max-w-xl mx-auto relative">
           
           {/* Background Connecting Line */}

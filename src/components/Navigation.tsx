@@ -23,15 +23,18 @@ export default function Navigation() {
     setOpen(false)
   }, [pathname])
 
-  // Prevent scroll when mobile menu is open
+  // Prevent scroll and hide floating buttons when mobile menu is open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden'
+      document.body.classList.add('menu-open')
     } else {
       document.body.style.overflow = ''
+      document.body.classList.remove('menu-open')
     }
     return () => {
       document.body.style.overflow = ''
+      document.body.classList.remove('menu-open')
     }
   }, [open])
 
@@ -72,16 +75,20 @@ export default function Navigation() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-semibold transition-all duration-200 relative py-1
+                  className={`text-sm font-semibold transition-all duration-200 relative py-1 group
                     ${isActive
                       ? 'text-red-600 dark:text-red-400 font-bold'
                       : 'text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-300'
                     }`}
                 >
                   {link.label}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-600 dark:bg-red-400 rounded-full" />
-                  )}
+                  <span 
+                    className={`absolute bottom-0 left-0 right-0 h-0.5 bg-red-600 dark:bg-red-400 rounded-full transform origin-left transition-all duration-300
+                      ${isActive 
+                        ? 'scale-x-100 opacity-100' 
+                        : 'scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-75'
+                      }`}
+                  />
                 </Link>
               )
             })}
@@ -101,10 +108,26 @@ export default function Navigation() {
             <button
               onClick={() => setOpen(!open)}
               type="button"
-              className="p-1.5 md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors active:scale-95"
+              className="p-1.5 md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors active:scale-95 w-9 h-9 flex items-center justify-center"
               aria-label="Toggle menu"
             >
-              {open ? <X size={22} /> : <Menu size={22} />}
+              <div className="relative w-6 h-6 flex items-center justify-center">
+                <span
+                  className={`absolute h-0.5 w-5 bg-current rounded-full transform transition-all duration-300 ${
+                    open ? 'rotate-45' : '-translate-y-1.5'
+                  }`}
+                />
+                <span
+                  className={`absolute h-0.5 w-5 bg-current rounded-full transform transition-all duration-300 ${
+                    open ? 'opacity-0 scale-x-0' : 'opacity-100'
+                  }`}
+                />
+                <span
+                  className={`absolute h-0.5 w-5 bg-current rounded-full transform transition-all duration-300 ${
+                    open ? '-rotate-45' : 'translate-y-1.5'
+                  }`}
+                />
+              </div>
             </button>
           </div>
         </div>
@@ -113,7 +136,7 @@ export default function Navigation() {
       {/* Mobile Drawer Overlay */}
       {open && (
         <div 
-          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
           onClick={() => setOpen(false)}
         />
       )}
