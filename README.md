@@ -22,19 +22,21 @@ A real-time emergency reporting web application for **Ligao City, Albay, Philipp
 
 ## Overview
 
-**BayaniLink** is a responsive full-stack web application designed to improve emergency response times in Ligao City. Citizens can submit geo-tagged incident reports from their mobile devices, while local government unit (LGU) personnel monitor and manage all incoming reports through a real-time admin dashboard.
+**BayaniLink** is a responsive full-stack web application designed to improve emergency response times in Ligao City. Citizens can submit geo-tagged incident reports from their mobile or desktop devices, while local government unit (LGU) personnel monitor and manage all incoming reports through a real-time admin dashboard.
 
 The name *"BayaniLink"* is a portmanteau of the Filipino word **"Bayanihan"** (the community spirit of unity and cooperation) and **"link"** — representing the connection between citizens and their local government during critical situations.
 
 ## Features
 
 - **📍 GPS Location Detection**: Automatically retrieves the reporter's current coordinates via the browser's Geolocation API.
-- **🗺️ Interactive Map (Phase 3)**: Incorporates a Leaflet map with a draggable pin for precise incident location marking.
+- **🗺️ Interactive Map**: Incorporates a Leaflet map with a draggable pin for precise incident location marking.
 - **🗂️ Categorized Incidents**: Predefined incident categories (e.g., Flood, Fire, Crash, Dangling Wire, Medical, and Other).
-- **🏘️ Searchable Barangay Selection**: Live search dropdown containing all 52 barangays of Ligao City.
+- **🏘️ Searchable Barangay Selection**: Live search dropdown containing all 52 barangays of Ligao City with mobile-optimized touch targets.
 - **📷 Photo Upload**: Allows citizens to upload incident photos directly to a public Supabase Storage bucket.
-- **🌙 Theme Toggle**: Persistent dark and light mode toggle saved to local storage for usability in low-light environments.
-- **📞 Quick Dial Panel**: Floating button with one-tap access to local emergency hotlines (CDRRMO, Fire, PNP, Red Cross, 911).
+- **📱 Responsive Stepper Form**: Clear multi-step citizen reporting form with scroll-spy progress indicators.
+- **🌙 Theme Toggle**: Persistent dark and light mode toggle saved to local storage with a hydration-flicker-free placeholder.
+- **📞 Quick Dial Panel & Directory**: One-tap floating emergency dialer and a dedicated hotline directory page with clickable telephone links.
+- **📖 Safety Guidelines**: Dedicated directory explaining safety protocols for floods, fires, medical issues, wire faults, and earthquakes.
 
 ## Project Structure
 
@@ -42,14 +44,22 @@ The name *"BayaniLink"* is a portmanteau of the Filipino word **"Bayanihan"** (t
 my-emergency-app/
 ├── src/
 │   ├── app/
-│   │   ├── globals.css             # Tailwind CSS configuration and theme styles
+│   │   ├── globals.css             # Tailwind CSS configuration and design system utilities
 │   │   ├── layout.tsx              # Application layout with next-themes provider
-│   │   └── page.tsx                # Citizen reporting homepage (mobile-first)
+│   │   ├── page.tsx                # Welcoming Landing Page UI
+│   │   ├── report/
+│   │   │   └── page.tsx            # Dedicated citizen reporting wizard page
+│   │   ├── guidelines/
+│   │   │   └── page.tsx            # Safety guidelines instructions page
+│   │   └── hotlines/
+│   │       └── page.tsx            # Full local emergency directory page
 │   ├── components/
-│   │   ├── BarangaySelect.tsx      # Searchable barangay dropdown selection
 │   │   ├── CitizenForm.tsx         # Main multi-step emergency reporting form
+│   │   ├── Navigation.tsx          # Responsive global navigation header
+│   │   ├── Footer.tsx              # Sticky page footer
 │   │   ├── QuickDial.tsx           # Floating speed dial for hotlines
 │   │   ├── ReportMap.tsx           # Leaflet map component with draggable pin
+│   │   ├── ScrollReveal.tsx        # Scroll animation utility for grid cards
 │   │   ├── ThemeProvider.tsx       # next-themes integration provider
 │   │   └── ThemeToggle.tsx         # Light/dark mode button
 │   ├── lib/
@@ -67,9 +77,9 @@ my-emergency-app/
 | :---: | :--- | :--- | :---: |
 | **1** | **Foundation** | Next.js boilerplate, Supabase client, DB schema, and TypeScript types | ✅ Complete |
 | **2** | **Citizen Interface** | Report form, photo capture & upload, Quick Dial hotline buttons | ✅ Complete |
-| **3** | **Mapping Component** | Leaflet interactive map integration with draggable pin positioning | 🔄 In Progress |
-| **4** | **Landing Page & Navigation** | Dedicated Homepage, Hamburger Menu, Safety Guidelines, Hotlines | 🔲 Upcoming |
-| **5** | **Authentication & Roles** | Secure access control for the upcoming admin dashboard | 🔲 Upcoming |
+| **3** | **Mapping Component** | Leaflet interactive map integration with draggable pin positioning | ✅ Complete |
+| **4** | **Landing Page & Navigation** | Dedicated Homepage, Hamburger Menu, Safety Guidelines, Hotlines | ✅ Complete |
+| **5** | **Authentication & Roles** | Secure access control for the upcoming admin dashboard | 🔄 In Progress |
 | **6** | **Data Validation** | Spam prevention and strict validation for reports | 🔲 Upcoming |
 | **7** | **AI Triage Assistant** | Collapsible Gemini-powered chatbot for safety instructions | 🔲 Upcoming |
 | **8** | **Admin Dashboard** | Real-time dashboard, fully responsive for desktop & mobile | 🔲 Upcoming |
@@ -82,7 +92,7 @@ my-emergency-app/
 
 - **Node.js** v18 or higher installed on your system.
 - A **Supabase** account and project initialized.
-- A **Google AI Studio** API key (needed for the upcoming Phase 4).
+- A **Google AI Studio** API key (needed for the upcoming Phase 7).
 
 ### 1. Clone the Repository
 
@@ -105,7 +115,7 @@ Create a `.env.local` file in the root of the `my-emergency-app` folder:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# (Phase 4) Gemini API Key
+# (Phase 7) Gemini API Key
 GEMINI_API_KEY=your_gemini_api_key
 
 # (Phase 5) Admin Auth Credentials
@@ -184,16 +194,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to view the 
 For immediate voice contact with responders in Ligao City, Albay:
 
 *   **CDRRMO Ligao City:** (052) 481-0012
-*   **Ligao City Fire Station:** (052) 481-0624
+*   **Ligao City BFP Fire Station:** (052) 481-0624
 *   **Ligao City PNP:** (052) 481-0035
-*   **Emergency / Rescue:** 911
+*   **City Health Office (CHO):** (052) 481-0089
 *   **Red Cross Albay:** (052) 820-3232
+*   **Emergency / Rescue (National):** 911
 
 > [!WARNING]
 > In life-threatening emergencies, do not wait for the application to process your report. Dial **911** or contact the CDRRMO directly.
-
----
-
-<div align="center">
-<i>Built with ❤️ for the people of Ligao City, designed and developed entirely by a solo developer.</i>
-</div>
