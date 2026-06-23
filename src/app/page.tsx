@@ -1,135 +1,126 @@
+import Link from 'next/link'
 import Image from 'next/image'
-import CitizenForm from '@/components/CitizenForm'
-import QuickDial from '@/components/QuickDial'
-import ThemeToggle from '@/components/ThemeToggle'
-import { MapPin, Phone } from 'lucide-react'
+import { ShieldAlert, FileText, Phone, MapPin, Clock, HeartPulse, ArrowRight } from 'lucide-react'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800/50 transition-colors duration-300">
-        <div className="max-w-screen-lg mx-auto px-4 py-3 flex items-center gap-3">
-          <div className="w-9 h-9 flex items-center justify-center shrink-0">
-            <Image src="/BayaniLink.png" alt="BayaniLink Logo" width={36} height={36} priority style={{ width: '36px', height: '36px' }} />
-          </div>
-          <div>
-            <h1 className="text-gray-900 dark:text-white font-bold text-base leading-none transition-colors duration-300">
-              BayaniLink
-            </h1>
-            <p className="text-gray-500 dark:text-gray-500 text-xs">
-              Ligao City Emergency Reporting
-            </p>
-          </div>
-          {/* Right side: Live badge + Theme toggle */}
-          <div className="ml-auto flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-400/50 dark:border-green-500/30 text-green-700 dark:text-green-400 text-xs font-medium transition-colors duration-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-green-400 animate-pulse" />
-              Live
-            </span>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+    <div className="relative min-h-[calc(100vh-62px)] bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+      
+      {/* Decorative Glow Background */}
+      <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-red-500/10 via-red-500/0 to-transparent pointer-events-none z-0 dark:from-red-950/20" />
 
-      {/* Hero Banner */}
-      <div className="relative bg-gradient-to-b from-red-50 dark:from-red-950/60 to-gray-50/0 dark:to-gray-950 border-b border-gray-200/60 dark:border-gray-800/50 transition-colors duration-300">
-        <div className="max-w-screen-lg mx-auto px-4 py-6">
-          <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400 text-xs font-semibold uppercase tracking-widest mb-1">
-            <MapPin size={12} />
-            Ligao City, Albay
-          </p>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight transition-colors duration-300">
+      {/* Hero Section */}
+      <section className="relative z-10 max-w-screen-lg mx-auto px-4 pt-10 pb-16 text-center">
+        {/* LGU Tag */}
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/30 border border-red-200/60 dark:border-red-900/40 text-red-700 dark:text-red-400 text-xs font-bold uppercase tracking-wider mb-6 transition-all duration-300">
+          <MapPin size={12} className="text-red-500" />
+          Ligao City, Albay, Philippines
+        </div>
+
+        {/* Hero Headline */}
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-[1.1] transition-colors duration-300">
+          Every Second Counts.<br />
+          <span className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent">
+            Report Emergencies Instantly.
+          </span>
+        </h1>
+
+        {/* Description */}
+        <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-400 text-base md:text-lg mt-6 leading-relaxed transition-colors duration-300">
+          BayaniLink connects you directly with the <strong className="font-extrabold text-gray-900 dark:text-white">Ligao City CDRRMO</strong> response team. Send real-time geo-tagged reports, pin locations on a map, and upload images to help responders act fast.
+        </p>
+
+        {/* Call to Actions (CTAs) */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+          <Link
+            href="/report"
+            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold text-base shadow-lg shadow-red-600/30 hover:shadow-red-500/40 scale-100 hover:scale-[1.03] active:scale-97 transition-all duration-200 flex items-center justify-center gap-2 group"
+          >
+            <ShieldAlert size={20} className="stroke-[2.5]" />
             Report an Emergency
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1.5 transition-colors duration-300">
-            Your report goes directly to the CDRRMO response team.
-          </p>
+            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+          </Link>
+          <Link
+            href="/guidelines"
+            className="w-full sm:w-auto px-8 py-4 rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold text-base hover:scale-[1.03] active:scale-97 transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            <FileText size={20} />
+            Safety Guidelines
+          </Link>
         </div>
-      </div>
+      </section>
 
-      {/* Form Container */}
-      <div className="max-w-screen-lg mx-auto px-4 py-6">
-        <CitizenForm />
-      </div>
-
-      {/* Footer */}
-      <footer className="border-t border-gray-200 dark:border-gray-800/50 bg-gray-100 dark:bg-gray-900/40 mt-4 transition-colors duration-300">
-        <div className="max-w-screen-lg mx-auto px-4 py-8 pb-28">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-            {/* Brand column */}
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Image src="/BayaniLink.png" alt="BayaniLink" width={28} height={28} style={{ width: '28px', height: '28px' }} />
-                <span className="font-bold text-gray-900 dark:text-white text-sm">BayaniLink</span>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-500 leading-relaxed">
-                Ligao City Emergency Reporting System — connecting citizens directly to the CDRRMO response team.
-              </p>
-              <div className="flex items-center gap-1.5 mt-3">
-                <MapPin size={11} className="text-red-500 dark:text-red-400" />
-                <span className="text-xs text-red-600 dark:text-red-400 font-medium">Ligao City, Albay, Philippines</span>
-              </div>
+      {/* Feature Grid */}
+      <section className="relative z-10 max-w-screen-lg mx-auto px-4 py-8 border-t border-gray-200/60 dark:border-gray-800/40">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* Card 1 */}
+          <div className="backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border border-white/20 dark:border-gray-800/40 rounded-2xl p-6 shadow-xl shadow-gray-200/10 dark:shadow-none transition-colors duration-300">
+            <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 flex items-center justify-center mb-4 shadow-inner">
+              <Clock size={20} className="stroke-[2.5]" />
             </div>
+            <h3 className="font-bold text-gray-900 dark:text-white text-base">Real-Time Routing</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 leading-relaxed">
+              Reports are instantly saved to Supabase and synced in real time to the CDRRMO dashboard, bypass-routing delays.
+            </p>
+          </div>
 
-            {/* Hotlines column */}
-            <div>
-              <h3 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <Phone size={11} />
-                Emergency Hotlines
-              </h3>
-              <ul className="space-y-2">
-                {[
-                  { label: 'CDRRMO Ligao City', number: '(052) 481-0012' },
-                  { label: 'Fire Station', number: '(052) 481-0624' },
-                  { label: 'PNP Ligao City', number: '(052) 481-0035' },
-                  { label: 'Red Cross Albay', number: '(052) 820-3232' },
-                  { label: 'Emergency / Rescue', number: '911' },
-                ].map((h) => (
-                  <li key={h.number} className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-500">{h.label}</span>
-                    <a
-                      href={`tel:${h.number.replace(/[^0-9+]/g, '')}`}
-                      className="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors"
-                    >
-                      {h.number}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+          {/* Card 2 */}
+          <div className="backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border border-white/20 dark:border-gray-800/40 rounded-2xl p-6 shadow-xl shadow-gray-200/10 dark:shadow-none transition-colors duration-300">
+            <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 flex items-center justify-center mb-4 shadow-inner">
+              <MapPin size={20} className="stroke-[2.5]" />
             </div>
+            <h3 className="font-bold text-gray-900 dark:text-white text-base">Precise Map Pinning</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 leading-relaxed">
+              Draggable Leaflet mapping automatically geocodes coordinates to street names and identifies local Albay barangays.
+            </p>
+          </div>
 
-            {/* About column */}
+          {/* Card 3 */}
+          <div className="backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border border-white/20 dark:border-gray-800/40 rounded-2xl p-6 shadow-xl shadow-gray-200/10 dark:shadow-none transition-colors duration-300">
+            <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400 flex items-center justify-center mb-4 shadow-inner">
+              <HeartPulse size={20} className="stroke-[2.5]" />
+            </div>
+            <h3 className="font-bold text-gray-900 dark:text-white text-base">Immediate First Aid</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 leading-relaxed">
+              Review safety protocols for floods, fires, medical emergencies, and wire issues while responders are in route.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Emergency Call Box */}
+      <section className="relative z-10 max-w-screen-lg mx-auto px-4 py-8 pb-16">
+        <div className="backdrop-blur-md bg-red-500/5 dark:bg-red-950/10 border border-red-500/25 dark:border-red-500/10 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-red-600/30 animate-pulse">
+              <Phone size={22} className="stroke-[2.5]" />
+            </div>
             <div>
-              <h3 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3">
-                About
-              </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-500 leading-relaxed">
-                An initiative of the City Government of Ligao, Albay. This system is monitored by the City Disaster Risk Reduction and Management Office (CDRRMO) to ensure a fast and coordinated emergency response.
-              </p>
-              <p className="text-xs text-gray-400 dark:text-gray-600 mt-3 italic">
-                For life-threatening emergencies, always call{' '}
-                <a href="tel:911" className="text-red-600 dark:text-red-400 font-bold not-italic hover:underline">911</a>{' '}
-                immediately.
+              <h3 className="font-extrabold text-gray-900 dark:text-white text-lg">Prefer to speak to an operator?</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                Dial the local rescue line immediately for verbal assistance.
               </p>
             </div>
           </div>
-
-          {/* Bottom bar */}
-          <div className="border-t border-gray-200/80 dark:border-gray-800/50 mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="text-xs text-gray-400 dark:text-gray-600">
-              &copy; {new Date().getFullYear()} BayaniLink &mdash; Ligao City, Albay, Philippines. All rights reserved.
-            </p>
-            <p className="text-xs text-gray-400 dark:text-gray-600">
-              Built for the people of Ligao City.
-            </p>
+          <div className="flex gap-3 w-full md:w-auto">
+            <a
+              href="tel:911"
+              className="flex-1 md:flex-initial px-6 py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm shadow-md text-center hover:scale-[1.02] active:scale-98 transition-all"
+            >
+              Call 911
+            </a>
+            <Link
+              href="/hotlines"
+              className="flex-1 md:flex-initial px-6 py-3.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 font-bold text-sm text-center hover:scale-[1.02] active:scale-98 transition-all"
+            >
+              All Hotlines
+            </Link>
           </div>
         </div>
-      </footer>
-
-      {/* Floating Quick Dial */}
-      <QuickDial />
-    </main>
+      </section>
+      
+    </div>
   )
 }

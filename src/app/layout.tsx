@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
+import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
+import QuickDial from '@/components/QuickDial'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -24,9 +27,16 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body className="bg-gray-50 dark:bg-gray-950 font-sans antialiased min-h-screen transition-colors duration-300">
+      <body className="bg-gray-50 dark:bg-gray-950 font-sans antialiased min-h-screen flex flex-col justify-between transition-colors duration-300">
         <ThemeProvider>
-          {children}
+          <div className="flex-1 flex flex-col">
+            <Navigation />
+            <main className="flex-1">
+              {children}
+            </main>
+          </div>
+          <Footer />
+          <QuickDial />
         </ThemeProvider>
       </body>
     </html>
