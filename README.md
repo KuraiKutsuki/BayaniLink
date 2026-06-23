@@ -202,3 +202,9 @@ For immediate voice contact with responders in Ligao City, Albay:
 
 > [!WARNING]
 > In life-threatening emergencies, do not wait for the application to process your report. Dial **911** or contact the CDRRMO directly.
+
+---
+
+<div align="center">
+<i>Built with ❤️ for the people of Ligao City, designed and developed entirely by a solo developer.</i>
+</div>
