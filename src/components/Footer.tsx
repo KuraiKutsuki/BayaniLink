@@ -11,7 +11,7 @@ export default function Footer() {
   if (pathname?.startsWith('/admin')) return null
 
   return (
-    <footer className="border-t border-gray-200 dark:border-gray-800/50 bg-gray-100 dark:bg-gray-900/40 mt-12 transition-colors duration-300">
+    <footer className="border-t border-gray-200 dark:border-gray-800/50 bg-gray-100 dark:bg-gray-900 mt-12 transition-colors duration-300">
       <div className="max-w-screen-lg mx-auto px-4 py-8 pb-28">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 

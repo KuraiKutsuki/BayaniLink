@@ -7,9 +7,6 @@ export default function Home() {
   return (
     <div className="relative min-h-[calc(100vh-62px)] bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       
-      {/* Decorative Glow Background */}
-      <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-red-500/10 via-red-500/0 to-transparent pointer-events-none z-0 dark:from-red-950/20" />
-
       {/* Hero Section */}
       <section className="relative z-10 max-w-screen-lg mx-auto px-4 pt-10 pb-16 text-center">
         {/* LGU Tag */}

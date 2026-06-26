@@ -8,7 +8,7 @@ const AGENCIES = [
     number: '(052) 481-0012',
     description: 'City Disaster Risk Reduction and Management Office. Primary dispatch for natural disasters, weather, and general rescue emergencies.',
     icon: ShieldAlert,
-    accent: 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400',
+    accent: 'border-red-500/30 text-red-600 dark:text-red-400',
   },
   {
     name: 'Emergency / Rescue (National)',
@@ -16,7 +16,7 @@ const AGENCIES = [
     number: '911',
     description: 'National emergency hotline. Toll-free voice dispatch for police, fire, rescue, and ambulance services nationwide.',
     icon: Phone,
-    accent: 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400',
+    accent: 'border-red-500/30 text-red-600 dark:text-red-400',
   },
   {
     name: 'Ligao City BFP Fire Station',
@@ -24,7 +24,7 @@ const AGENCIES = [
     number: '(052) 481-0624',
     description: 'Bureau of Fire Protection - Ligao City. Call for fire outbreaks, structural collapses, hazardous leaks, and emergency assistance.',
     icon: Flame,
-    accent: 'bg-orange-500/10 border-orange-500/30 text-orange-600 dark:text-orange-400',
+    accent: 'border-orange-500/30 text-orange-600 dark:text-orange-400',
   },
   {
     name: 'Ligao City Police Station (PNP)',
@@ -32,7 +32,7 @@ const AGENCIES = [
     number: '(052) 481-0035',
     description: 'Philippine National Police - Ligao. Reach out for crime reporting, public safety, traffic collisions, and law enforcement support.',
     icon: Shield,
-    accent: 'bg-blue-500/10 border-blue-500/30 text-blue-600 dark:text-blue-400',
+    accent: 'border-blue-500/30 text-blue-600 dark:text-blue-400',
   },
   {
     name: 'Red Cross Albay Chapter',
@@ -40,7 +40,7 @@ const AGENCIES = [
     number: '(052) 820-3232',
     description: 'Philippine Red Cross - Albay. Contact for blood donation supplies, first-aid training, and secondary disaster relief operations.',
     icon: Heart,
-    accent: 'bg-pink-500/10 border-pink-500/30 text-pink-600 dark:text-pink-400',
+    accent: 'border-pink-500/30 text-pink-600 dark:text-pink-400',
   },
   {
     name: 'City Health Office (CHO)',
@@ -48,7 +48,7 @@ const AGENCIES = [
     number: '(052) 481-0089',
     description: 'Ligao City Health Office. Inquiries on local health clinics, immunization campaigns, and local ambulance transfers.',
     icon: Activity,
-    accent: 'bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400',
+    accent: 'border-green-500/30 text-green-600 dark:text-green-400',
   },
   {
     name: 'Albay Power Co. (APEC/ALECO)',
@@ -56,7 +56,7 @@ const AGENCIES = [
     number: '(052) 742-5600',
     description: 'Power distributor hotline. Report live wires, transformer damage, power outages, and electrical sparks.',
     icon: Zap,
-    accent: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-600 dark:text-yellow-400',
+    accent: 'border-yellow-500/30 text-yellow-600 dark:text-yellow-400',
   },
 ]
 
@@ -65,7 +65,7 @@ export default function HotlinesPage() {
     <div className="relative min-h-[calc(100vh-62px)] bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       
       {/* Header Banner */}
-      <div className="relative bg-gradient-to-b from-red-50 dark:from-red-950/40 to-gray-50/0 dark:to-gray-950 border-b border-gray-200/60 dark:border-gray-800/40 py-6 transition-colors duration-300">
+      <div className="relative border-b border-gray-200 dark:border-gray-800/60 py-6 transition-colors duration-300">
         <div className="max-w-screen-lg mx-auto px-4">
           <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider mb-1">
             <Award size={13} />
@@ -92,7 +92,7 @@ export default function HotlinesPage() {
             return (
               <ScrollReveal key={agency.name} delay={delay} desktopDelay={desktopDelay}>
                 <div 
-                  className={`bg-white/95 dark:bg-gray-900/95 border rounded-2xl p-6 shadow-sm transition-all duration-300 flex flex-col justify-between h-full focus-within:ring-2 focus-within:ring-red-500/20 ${agency.accent}`}
+                  className={`bg-white dark:bg-gray-900 border rounded-2xl p-6 shadow-sm transition-all duration-300 flex flex-col justify-between h-full focus-within:ring-2 focus-within:ring-red-500/20 ${agency.accent}`}
                 >
                   <div>
                     <div className="flex items-center justify-between gap-3 mb-4">

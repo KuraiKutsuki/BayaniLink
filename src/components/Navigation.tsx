@@ -43,7 +43,7 @@ export default function Navigation() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800/50 transition-colors duration-300">
+      <header className="sticky top-0 z-50 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800/60 transition-colors duration-300">
         <div className="max-w-screen-lg mx-auto px-4 py-3 flex items-center justify-between">
           {/* Logo & Brand */}
           <Link href="/" className="flex items-center gap-2.5 group">
@@ -96,9 +96,11 @@ export default function Navigation() {
 
           {/* Actions & Hamburger Toggle */}
           <div className="flex items-center gap-3">
-            {/* Live Indicator */}
-            <div className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-400/50 dark:border-green-500/30 text-green-700 dark:text-green-400 text-xs font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-green-400 animate-pulse" />
+            <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-400/50 dark:border-green-500/30 text-green-700 dark:text-green-400 text-xs font-bold transition-all duration-300">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 dark:bg-green-400 opacity-75 animate-ping-slow" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600 dark:bg-green-400" />
+              </span>
               CDRRMO Live
             </div>
             

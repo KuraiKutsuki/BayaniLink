@@ -3,7 +3,7 @@ import { MapPin } from 'lucide-react'
 
 export default function ReportPage() {
   return (
-    <div className="relative min-h-[calc(100vh-62px)] bg-gradient-to-b from-red-50 dark:from-red-950/40 to-gray-50/0 dark:to-gray-950 transition-colors duration-300">
+    <div className="relative min-h-[calc(100vh-62px)] bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       {/* Banner */}
       <div className="max-w-screen-lg mx-auto px-4 py-6">
         <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider mb-1">

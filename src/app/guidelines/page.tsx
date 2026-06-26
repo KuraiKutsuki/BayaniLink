@@ -5,7 +5,7 @@ const GUIDELINES = [
   {
     title: 'Flood Safety',
     icon: Waves,
-    color: 'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/5',
+    color: 'border-blue-500/30 text-blue-600 dark:text-blue-400',
     pill: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
     dos: [
       'Monitor local radio/TV or CDRRMO announcements for evacuation orders.',
@@ -22,7 +22,7 @@ const GUIDELINES = [
   {
     title: 'Fire Safety',
     icon: Flame,
-    color: 'border-orange-500/30 text-orange-600 dark:text-orange-400 bg-orange-500/5',
+    color: 'border-orange-500/30 text-orange-600 dark:text-orange-400',
     pill: 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300',
     dos: [
       'If smoke is present, stay low to the floor and crawl to safety.',
@@ -38,7 +38,7 @@ const GUIDELINES = [
   {
     title: 'Medical Emergencies',
     icon: HeartPulse,
-    color: 'border-green-500/30 text-green-600 dark:text-green-400 bg-green-500/5',
+    color: 'border-green-500/30 text-green-600 dark:text-green-400',
     pill: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
     dos: [
       'Keep the patient warm, quiet, and reassured.',
@@ -54,7 +54,7 @@ const GUIDELINES = [
   {
     title: 'Dangling Power Lines',
     icon: Zap,
-    color: 'border-yellow-500/30 text-yellow-600 dark:text-yellow-400 bg-yellow-500/5',
+    color: 'border-yellow-500/30 text-yellow-600 dark:text-yellow-400',
     pill: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
     dos: [
       'Assume all downed power lines are energized and dangerous.',
@@ -70,7 +70,7 @@ const GUIDELINES = [
   {
     title: 'Earthquake Protocol',
     icon: ShieldAlert,
-    color: 'border-red-500/30 text-red-600 dark:text-red-400 bg-red-500/5',
+    color: 'border-red-500/30 text-red-600 dark:text-red-400',
     pill: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300',
     dos: [
       'Drop, Cover, and Hold on under heavy furniture like a table or desk.',
@@ -90,7 +90,7 @@ export default function GuidelinesPage() {
     <div className="relative min-h-[calc(100vh-62px)] bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       
       {/* Header Banner */}
-      <div className="relative bg-gradient-to-b from-red-50 dark:from-red-950/40 to-gray-50/0 dark:to-gray-950 border-b border-gray-200/60 dark:border-gray-800/40 py-6 transition-colors duration-300">
+      <div className="relative border-b border-gray-200 dark:border-gray-800/60 py-6 transition-colors duration-300">
         <div className="max-w-screen-lg mx-auto px-4">
           <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider mb-1">
             <HeartHandshake size={13} />
@@ -115,7 +115,7 @@ export default function GuidelinesPage() {
             return (
               <ScrollReveal key={g.title} delay={delay} desktopDelay={desktopDelay}>
                 <div 
-                  className={`bg-white/95 dark:bg-gray-900/95 border rounded-2xl p-6 md:p-8 shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-red-500/20 ${g.color}`}
+                  className={`bg-white dark:bg-gray-900 border rounded-2xl p-6 md:p-8 shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-red-500/20 ${g.color}`}
                 >
                   {/* Header */}
                   <div className="flex items-center gap-3.5 border-b border-gray-200/60 dark:border-gray-800/40 pb-4 mb-5">

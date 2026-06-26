@@ -3,14 +3,15 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { supabase } from '@/lib/supabaseClient'
-import { MapPin, Upload, AlertTriangle, CheckCircle, Loader2, X, Search, ChevronDown, Waves, Flame, Car, Zap, HeartPulse, CircleAlert, Send, Maximize2, ArrowLeft } from 'lucide-react'
+import { MapPin, Upload, AlertTriangle, CheckCircle, Loader2, X, Search, ChevronDown, Waves, Flame, Car, Zap, HeartPulse, CircleAlert, Send, Maximize2, ArrowLeft, Camera, Image } from 'lucide-react'
 
 // Leaflet map — SSR disabled (Leaflet requires browser APIs)
 const ReportMap = dynamic(() => import('./ReportMap'), {
   ssr: false,
   loading: () => (
-    <div className="h-[260px] rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
-      <span className="text-gray-400 dark:text-gray-500 text-sm">Loading map…</span>
+    <div className="h-[260px] w-full rounded-xl bg-gray-100 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/60 flex flex-col items-center justify-center gap-2 animate-pulse transition-all">
+      <Loader2 className="w-6 h-6 text-gray-400 dark:text-gray-500 animate-spin" />
+      <span className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider">Loading Interactive Map...</span>
     </div>
   ),
 })
@@ -532,10 +533,16 @@ export default function CitizenForm() {
     const cat = CATEGORIES.find((c) => c.label === reportCategory)
     const CatIcon = cat?.icon
     return (
-      <div className="backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border border-white/20 dark:border-gray-800/40 rounded-2xl shadow-xl shadow-gray-200/20 dark:shadow-none p-8 flex flex-col items-center gap-5 text-center">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-8 flex flex-col items-center gap-5 text-center animate-modal-in">
         {/* Animated check */}
-        <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 border-2 border-green-400/60 dark:border-green-500/40 flex items-center justify-center">
-          <CheckCircle size={40} className="text-green-600 dark:text-green-400" />
+        <div className="relative flex items-center justify-center py-2">
+          {/* Pulsing outer ring */}
+          <div className="absolute w-24 h-24 rounded-full bg-green-500/10 dark:bg-green-400/10 animate-ping-slow" />
+          
+          {/* Main check circle */}
+          <div className="relative w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 border-2 border-green-400/60 dark:border-green-500/40 flex items-center justify-center shadow-inner">
+            <CheckCircle size={40} className="text-green-600 dark:text-green-400" />
+          </div>
         </div>
 
         <div>
@@ -588,7 +595,7 @@ export default function CitizenForm() {
       {/* Sticky Step Progress Tracker */}
       <div 
         id="step-progress-tracker"
-        className="sticky top-[60px] z-40 -mx-4 px-4 py-2.5 md:mx-0 md:px-6 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 border-b border-gray-200/60 dark:border-gray-800/40 mb-6 transition-all duration-300"
+        className="sticky top-[60px] z-40 -mx-4 px-4 py-2.5 md:mx-0 md:px-6 bg-white dark:bg-gray-950 border-b border-gray-200/60 dark:border-gray-800/40 mb-6 transition-all duration-300"
       >
         <div className="flex items-center justify-between w-full max-w-xl mx-auto relative">
           
@@ -670,7 +677,7 @@ export default function CitizenForm() {
       )}
 
       {/* ── Step 1: Incident Type ─────────────────────────── */}
-      <div id="step-1" className="relative z-30 backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border border-white/20 dark:border-gray-800/40 rounded-2xl shadow-xl shadow-gray-200/20 dark:shadow-none p-4 md:p-5">
+      <div id="step-1" className="relative z-30 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-4 md:p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
           <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors">
@@ -698,7 +705,7 @@ export default function CitizenForm() {
       </div>
 
       {/* ── Step 2: Location Details ──────────────────────── */}
-      <div id="step-2" className="relative z-20 backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border border-white/20 dark:border-gray-800/40 rounded-2xl shadow-xl shadow-gray-200/20 dark:shadow-none p-4 md:p-5">
+      <div id="step-2" className="relative z-20 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-4 md:p-5">
         <div className="flex items-center gap-2 mb-4">
           <span className="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
           <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Location Details</span>
@@ -744,7 +751,7 @@ export default function CitizenForm() {
       </div>
 
       {/* ── Step 3: Location & Map ──────────────────────── */}
-      <div id="step-3" className="relative z-10 backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border border-white/20 dark:border-gray-800/40 rounded-2xl shadow-xl shadow-gray-200/20 dark:shadow-none p-4 md:p-5">
+      <div id="step-3" className="relative z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-4 md:p-5">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
@@ -825,7 +832,7 @@ export default function CitizenForm() {
       </div>
 
       {/* ── Step 4: Photo ──────────────────────────────── */}
-      <div id="step-4" className="backdrop-blur-md bg-white/75 dark:bg-gray-900/60 border border-white/20 dark:border-gray-800/40 rounded-2xl shadow-xl shadow-gray-200/20 dark:shadow-none p-4 md:p-5">
+      <div id="step-4" className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-4 md:p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="w-5 h-5 rounded-full bg-gray-400 dark:bg-gray-600 text-white text-xs font-bold flex items-center justify-center shrink-0">4</span>
           <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -855,39 +862,77 @@ export default function CitizenForm() {
             </div>
           </div>
         ) : (
-          <label
-            htmlFor="photo-upload"
+          <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`flex flex-col items-center justify-center gap-3 py-8 rounded-xl border-2 border-dashed transition-all duration-200 cursor-pointer
+            onClick={(e) => {
+              // On desktop, clicking anywhere inside the dropzone triggers file browse
+              if (window.innerWidth >= 768) {
+                const target = e.target as HTMLElement;
+                if (!target.closest('button') && !target.closest('label') && !target.closest('input')) {
+                  document.getElementById('photo-upload')?.click();
+                }
+              }
+            }}
+            className={`flex flex-col items-center justify-center gap-3 py-8 rounded-xl border-2 border-dashed transition-all duration-200 group
               ${isDragging
                 ? 'border-red-500 bg-red-50/60 dark:bg-red-950/20 scale-[1.01] shadow-lg shadow-red-500/10'
-                : 'border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 hover:border-red-300 dark:hover:border-gray-500 hover:bg-red-50/30 dark:hover:bg-gray-800/50'
-              }`}
+                : 'border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 hover:border-red-300 dark:hover:border-red-900/50 hover:bg-red-50/10 dark:hover:bg-red-950/10'
+              } md:cursor-pointer`}
           >
             <Upload 
               size={24} 
-              className={`text-gray-400 dark:text-gray-500 transition-transform duration-300
-                ${isDragging ? 'scale-125 text-red-500 -translate-y-1 animate-pulse' : 'group-hover:scale-110'}`} 
+              className={`text-gray-400 dark:text-gray-500 transition-all duration-300
+                ${isDragging ? 'scale-125 text-red-500 -translate-y-1 animate-pulse' : 'group-hover:scale-110 group-hover:text-red-500'}`} 
             />
-            <div className="text-center">
+            <div className="text-center px-4">
               <span className="text-gray-700 dark:text-gray-300 text-sm font-semibold block">
-                {isDragging ? 'Drop your image here' : 'Take a photo or upload file'}
+                {/* Responsive text instructions */}
+                <span className="hidden md:inline">
+                  Drag & drop your emergency photo here, or <span className="text-red-600 dark:text-red-400 underline decoration-2 cursor-pointer hover:text-red-700">browse files</span>
+                </span>
+                <span className="md:hidden">Provide a photo of the emergency</span>
               </span>
-              <span className="text-gray-400 dark:text-gray-500 text-xs mt-1 block">
-                Drag & drop, tap to select, or open camera
+              <span className="block text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+                Supports PNG, JPG, or WEBP up to 5MB
               </span>
             </div>
+            
+            {/* Mobile/Tablet view: Dual Buttons */}
+            <div className="flex flex-row gap-3 md:hidden">
+              <label
+                htmlFor="photo-capture"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors shadow-sm"
+              >
+                <Camera size={18} />
+                Take Photo
+              </label>
+              <label
+                htmlFor="photo-upload"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors shadow-sm"
+              >
+                <Image size={18} />
+                Upload File
+              </label>
+            </div>
+
             <input
-              id="photo-upload"
+              id="photo-capture"
               type="file"
               accept="image/*"
               capture="environment"
               className="hidden"
               onChange={handleImageChange}
             />
-          </label>
+            <input
+              id="photo-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageChange}
+            />
+          </div>
         )}
       </div>
 
@@ -896,8 +941,8 @@ export default function CitizenForm() {
         type="submit"
         id="submit-report-btn"
         disabled={isLoading}
-        className="w-full py-4 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-bold
-          text-base tracking-wide shadow-lg shadow-red-900/40 hover:from-red-500 hover:to-red-600
+        className="w-full py-4 rounded-xl bg-red-600 text-white font-bold
+          text-base tracking-wide shadow-md shadow-red-900/10 hover:bg-red-700 active:bg-red-800
           active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200
           flex items-center justify-center gap-2"
       >
@@ -940,7 +985,7 @@ export default function CitizenForm() {
           </div>
 
           {/* GPS strip */}
-          <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60 shrink-0">
+          <div className="px-4 py-2.5 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 shrink-0">
             <button
               type="button"
               onClick={handleFullscreenGPS}
