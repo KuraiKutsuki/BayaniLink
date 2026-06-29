@@ -54,6 +54,11 @@ my-emergency-app/
 │   │   │   └── page.tsx            # Safety guidelines instructions page
 │   │   ├── hotlines/
 │   │   │   └── page.tsx            # Full local emergency directory page
+│   │   ├── admin/
+│   │   │   ├── page.tsx            # Real-time LGU emergency dashboard portal
+│   │   │   ├── actions.ts          # Secure server-side database status updates
+│   │   │   └── login/
+│   │   │       └── page.tsx        # Secure admin login form
 │   │   └── api/
 │   │       └── chat/
 │   │           └── route.ts        # Secure backend route for Gemini AI chatbot
@@ -62,13 +67,16 @@ my-emergency-app/
 │   │   ├── Navigation.tsx          # Responsive global navigation header
 │   │   ├── Footer.tsx              # Sticky page footer
 │   │   ├── QuickDial.tsx           # Floating speed dial for hotlines
-│   │   ├── ReportMap.tsx           # Leaflet map component with draggable pin
-│   │   ├── ScrollReveal.tsx        # Scroll animation utility for grid cards
+│   │   ├── ReportMap.tsx           # Leaflet map component with status markers
 │   │   ├── ThemeProvider.tsx       # next-themes integration provider
 │   │   ├── ThemeToggle.tsx         # Light/dark mode button
-│   │   └── Chatbot.tsx             # Collapsible floating AI chatbot widget
+│   │   ├── Chatbot.tsx             # Collapsible floating AI chatbot widget
+│   │   ├── AdminDashboard.tsx      # Real-time incident logs, search, & detail drawer
+│   │   └── AnalyticsCharts.tsx     # Metrics summary cards and category charts
 │   ├── lib/
-│   │   └── supabaseClient.ts       # Supabase Client initialization
+│   │   ├── supabaseClient.ts       # Supabase Client initialization
+│   │   └── validations.ts          # Zod validation schemas for forms
+│   ├── middleware.ts               # Next.js server-side route protection (admin routes)
 │   └── types/
 │       └── database.types.ts       # Typed Supabase schema bindings
 ├── public/
