@@ -79,8 +79,8 @@ my-emergency-app/
 | **2** | **Citizen Interface** | Report form, photo capture & upload, Quick Dial hotline buttons | ✅ Complete |
 | **3** | **Mapping Component** | Leaflet interactive map integration with draggable pin positioning | ✅ Complete |
 | **4** | **Landing Page & Navigation** | Dedicated Homepage, Hamburger Menu, Safety Guidelines, Hotlines | ✅ Complete |
-| **5** | **Authentication & Roles** | Secure access control for the upcoming admin dashboard | 🔄 In Progress |
-| **6** | **Data Validation** | Spam prevention and strict validation for reports | 🔲 Upcoming |
+| **5** | **Authentication & Roles** | Secure access control for the upcoming admin dashboard | ✅ Complete |
+| **6** | **Data Validation** | Spam prevention and strict validation for reports | ✅ Complete |
 | **7** | **AI Triage Assistant** | Collapsible Gemini-powered chatbot for safety instructions | 🔲 Upcoming |
 | **8** | **Admin Dashboard** | Real-time dashboard, fully responsive for desktop & mobile | 🔲 Upcoming |
 

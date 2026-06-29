@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import { supabase } from '@/lib/supabaseClient'
+import { submitReport } from '@/app/actions/report'
 import { MapPin, Upload, AlertTriangle, CheckCircle, Loader2, X, Search, ChevronDown, Waves, Flame, Car, Zap, HeartPulse, CircleAlert, Send, Maximize2, ArrowLeft, Camera, Image } from 'lucide-react'
 
 // Leaflet map — SSR disabled (Leaflet requires browser APIs)
@@ -460,46 +460,28 @@ export default function CitizenForm() {
     if (form.latitude === null || form.longitude === null)
       return setErrorMsg('Please tap the map or use GPS to set your location.')
 
-    let image_url: string | null = null
-
+    setStatus('submitting')
+    
+    // Prepare FormData for the Server Action
+    const formData = new FormData()
+    formData.append('category', form.category)
+    formData.append('description', form.description)
+    formData.append('barangay', form.barangay)
+    formData.append('latitude', form.latitude.toString())
+    formData.append('longitude', form.longitude.toString())
     if (form.imageFile) {
-      setStatus('uploading')
-      const fileName = `${Date.now()}-${form.imageFile.name.replace(/\s/g, '_')}`
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('incident-photos')
-        .upload(fileName, form.imageFile, { cacheControl: '3600', upsert: false })
-
-      if (uploadError) {
-        setErrorMsg(`Image upload failed: ${uploadError.message}`)
-        setStatus('error')
-        return
-      }
-
-      const { data: urlData } = supabase.storage.from('incident-photos').getPublicUrl(uploadData.path)
-      image_url = urlData.publicUrl
+      formData.append('imageFile', form.imageFile)
     }
 
-    setStatus('submitting')
-    const { data: insertData, error: insertError } = await supabase
-      .from('reports')
-      .insert({
-        category: form.category,
-        description: form.description,
-        barangay: form.barangay,
-        latitude: form.latitude,
-        longitude: form.longitude,
-        image_url,
-      })
-      .select()
-      .single()
+    const result = await submitReport(formData)
 
-    if (insertError) {
-      setErrorMsg(`Submission failed: ${insertError.message}`)
+    if (!result.success) {
+      setErrorMsg(result.error || 'An error occurred during submission.')
       setStatus('error')
       return
     }
 
-    setReportId(insertData?.id ?? null)
+    setReportId(result.reportId ?? null)
     setReportCategory(form.category)
     setCountdown(8)
     setStatus('success')
