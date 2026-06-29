@@ -67,26 +67,33 @@ export default async function AdminDashboardPage() {
 
           {/* User Controls */}
           <div className="flex items-center gap-4">
-            <div className="hidden sm:block text-right">
-              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
-                Active Operator
-              </span>
-              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                {user.email}
-              </span>
-            </div>
-
             <ThemeToggle />
 
-            <form action={logout}>
-              <button
-                type="submit"
-                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300 font-bold text-xs hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors shadow-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
-              >
-                <LogOut size={13} className="shrink-0" />
-                <span>Sign Out</span>
-              </button>
-            </form>
+            {/* Visual Separator */}
+            <div className="hidden sm:block h-6 w-px bg-gray-200 dark:bg-gray-800" aria-hidden="true" />
+
+            {/* Session Group */}
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:block text-right">
+                <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
+                  Active Operator
+                </span>
+                <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  {user.email}
+                </span>
+              </div>
+
+              <form action={logout}>
+                <button
+                  type="submit"
+                  aria-label="Sign Out"
+                  className="flex items-center justify-center gap-2 w-9 h-9 sm:w-auto sm:px-4 sm:py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300 font-bold text-xs hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors shadow-sm focus:ring-2 focus:ring-red-500 focus:outline-none touch-manipulation active:scale-95"
+                >
+                  <LogOut size={16} className="shrink-0" />
+                  <span className="hidden sm:inline">Sign Out</span>
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </header>

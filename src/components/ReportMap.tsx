@@ -21,12 +21,35 @@ const STATUS_COLORS = {
   Resolved: '#16a34a'     // Operational Green
 }
 
-function createPinIcon(color: string, isSelected: boolean): L.DivIcon {
+function createPinIcon(color: string, isSelected: boolean, count: number = 1): L.DivIcon {
   const width = isSelected ? '28px' : '24px'
   const height = isSelected ? '28px' : '24px'
   const borderSize = isSelected ? '4px' : '3px'
   const shadowBlur = isSelected ? '18px' : '10px'
   const shadowOpacity = isSelected ? '0.6' : '0.4'
+
+  const badgeHtml = count > 1 ? `
+    <div style="
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #030712;
+      color: #ffffff;
+      border: 2px solid white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      z-index: 10;
+    ">
+      ${count}
+    </div>
+  ` : ''
 
   return L.divIcon({
     html: `
@@ -50,6 +73,7 @@ function createPinIcon(color: string, isSelected: boolean): L.DivIcon {
           top: 0;
           left: 4px;
         "></div>
+        ${badgeHtml}
         <div style="
           width: 12px;
           height: 6px;
@@ -208,6 +232,29 @@ export default function ReportMap({
   
   const hasLocation = latitude !== null && longitude !== null
 
+  // Group reports by coordinates in admin readOnly mode
+  const groupedReports = readOnly
+    ? reports.reduce((acc: { [key: string]: ReportRow[] }, report) => {
+        if (
+          report.latitude == null ||
+          report.longitude == null ||
+          isNaN(Number(report.latitude)) ||
+          isNaN(Number(report.longitude))
+        ) {
+          return acc
+        }
+        const lat = Number(report.latitude)
+        const lng = Number(report.longitude)
+        // Group by coordinates rounded to 5 decimal places (approx. 1.1 meters)
+        const key = `${lat.toFixed(5)},${lng.toFixed(5)}`
+        if (!acc[key]) {
+          acc[key] = []
+        }
+        acc[key].push(report)
+        return acc
+      }, {})
+    : {}
+
   return (
     <div
       className={`relative z-10 overflow-hidden ${
@@ -263,53 +310,95 @@ export default function ReportMap({
         )}
 
         {/* 2. Admin Dashboard Mode Markers */}
-        {readOnly && reports.map((report) => {
-          if (report.latitude == null || report.longitude == null || isNaN(Number(report.latitude)) || isNaN(Number(report.longitude))) {
-            return null;
+        {readOnly && Object.entries(groupedReports).map(([coordKey, groupReports]) => {
+          const [latStr, lngStr] = coordKey.split(',')
+          const lat = Number(latStr)
+          const lng = Number(lngStr)
+          
+          const count = groupReports.length
+          const hasSelected = groupReports.some((r) => r.id === selectedReportId)
+          
+          // Determine status color based on priority: Submitted (Red) > In Progress (Orange) > Resolved (Green)
+          let color = STATUS_COLORS.Resolved
+          if (groupReports.some((r) => r.status === 'Submitted')) {
+            color = STATUS_COLORS.Submitted
+          } else if (groupReports.some((r) => r.status === 'In Progress')) {
+            color = STATUS_COLORS['In Progress']
           }
 
-          const lat = Number(report.latitude)
-          const lng = Number(report.longitude)
-          const isSelected = report.id === selectedReportId
-          const color = STATUS_COLORS[report.status] || STATUS_COLORS.Submitted
-          
+          // If there's a selected report in the group, prioritize it for default click action
+          // otherwise click selects the first report in the group
+          const defaultSelectId = groupReports.find((r) => r.id === selectedReportId)?.id || groupReports[0].id
+
           return (
             <Marker
-              key={report.id}
+              key={coordKey}
               position={[lat, lng]}
-              icon={createPinIcon(color, isSelected)}
+              icon={createPinIcon(color, hasSelected, count)}
               eventHandlers={{
                 click() {
                   if (onSelectReport) {
-                    onSelectReport(report.id)
+                    onSelectReport(defaultSelectId)
                   }
                 },
               }}
             >
               <Popup>
-                <div className="p-1 max-w-[200px]">
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <span className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">
-                      {report.category}
-                    </span>
-                    <span 
-                      className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full ${
-                        report.status === 'Resolved'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
-                          : report.status === 'In Progress'
-                          ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300'
-                          : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
-                      }`}
-                    >
-                      {report.status}
-                    </span>
+                <div className="p-1 w-[220px] max-h-[220px] overflow-y-auto custom-scrollbar">
+                  {count > 1 && (
+                    <div className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 border-b border-gray-150 dark:border-gray-800 pb-1.5 flex items-center justify-between">
+                      <span>Multiple Incidents ({count})</span>
+                      <span className="bg-red-50 dark:bg-red-955/20 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded text-[9px] font-black uppercase">
+                        Overlapping
+                      </span>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-2">
+                    {groupReports.map((report) => {
+                      const isReportSelected = report.id === selectedReportId
+                      return (
+                        <div 
+                          key={report.id}
+                          onClick={() => {
+                            if (onSelectReport) {
+                              onSelectReport(report.id)
+                            }
+                          }}
+                          className={`p-2.5 rounded-xl border transition-all cursor-pointer text-left
+                            ${isReportSelected
+                              ? 'bg-red-50/60 dark:bg-red-955/15 border-red-200 dark:border-red-900/30'
+                              : 'bg-gray-50/50 dark:bg-gray-800/30 border-gray-100 dark:border-gray-850 hover:bg-gray-100/50 dark:hover:bg-gray-850/50'
+                            }`}
+                        >
+                          <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <span className={`text-[11px] font-black uppercase tracking-wider ${
+                              isReportSelected ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'
+                            }`}>
+                              {report.category}
+                            </span>
+                            <span 
+                              className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${
+                                report.status === 'Resolved'
+                                  ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
+                                  : report.status === 'In Progress'
+                                  ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300'
+                                  : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
+                              }`}
+                            >
+                              {report.status}
+                            </span>
+                          </div>
+                          <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1">
+                            Brgy. {report.barangay}
+                          </p>
+                          <p className="text-[10px] text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed">
+                            {report.description}
+                          </p>
+                        </div>
+                      )
+                    })}
                   </div>
-                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
-                    Brgy. {report.barangay}
-                  </p>
-                  <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-2">
-                    {report.description}
-                  </p>
                 </div>
               </Popup>
             </Marker>
