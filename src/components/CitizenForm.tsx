@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { submitReport } from '@/app/actions/report'
 import { MapPin, Upload, AlertTriangle, CheckCircle, Loader2, X, Search, ChevronDown, Waves, Flame, Car, Zap, HeartPulse, CircleAlert, Send, Maximize2, ArrowLeft, Camera, Image } from 'lucide-react'
@@ -192,17 +193,33 @@ function BarangaySelect({ value, onChange }: BarangaySelectProps) {
   )
 }
 
-export default function CitizenForm() {
+function CitizenFormInner() {
+  const searchParams = useSearchParams()
   const [form, setForm] = useState<FormState>({
-    category: '',
-    description: '',
-    barangay: '',
+    category: searchParams.get('category') || '',
+    description: searchParams.get('description') || '',
+    barangay: searchParams.get('barangay') || '',
     latitude: null,
     longitude: null,
     address: null,
     imageFile: null,
     imagePreview: null,
   })
+
+  // Auto-scroll to map if form is pre-filled from AI
+  useEffect(() => {
+    if (searchParams.get('category') && searchParams.get('description')) {
+      setTimeout(() => {
+        const el = document.getElementById('step-3')
+        if (el) {
+          const offset = 124
+          const bodyRect = document.body.getBoundingClientRect().top
+          const elementRect = el.getBoundingClientRect().top
+          window.scrollTo({ top: elementRect - bodyRect - offset, behavior: 'smooth' })
+        }
+      }, 500)
+    }
+  }, [searchParams])
   const [status, setStatus] = useState<SubmitStatus>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [reportId, setReportId] = useState<string | null>(null)
@@ -1024,5 +1041,17 @@ export default function CitizenForm() {
         </div>
       )}
     </>
+  )
+}
+
+export default function CitizenForm() {
+  return (
+    <Suspense fallback={
+      <div className="flex w-full items-center justify-center p-12">
+        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+      </div>
+    }>
+      <CitizenFormInner />
+    </Suspense>
   )
 }

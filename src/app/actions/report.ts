@@ -59,7 +59,7 @@ export async function submitReport(formData: FormData) {
     // 3. Validation
     const validationResult = reportSchema.safeParse(rawData)
     if (!validationResult.success) {
-      return { success: false, error: validationResult.error.errors[0].message }
+      return { success: false, error: validationResult.error.issues[0].message }
     }
     const validatedData = validationResult.data
 

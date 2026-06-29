@@ -28,15 +28,16 @@ The name *"BayaniLink"* is a portmanteau of the Filipino word **"Bayanihan"** (t
 
 ## Features
 
-- **📍 GPS Location Detection**: Automatically retrieves the reporter's current coordinates via the browser's Geolocation API.
-- **🗺️ Interactive Map**: Incorporates a Leaflet map with a draggable pin for precise incident location marking.
-- **🗂️ Categorized Incidents**: Predefined incident categories (e.g., Flood, Fire, Crash, Dangling Wire, Medical, and Other).
-- **🏘️ Searchable Barangay Selection**: Live search dropdown containing all 52 barangays of Ligao City with mobile-optimized touch targets.
-- **📷 Photo Upload**: Allows citizens to upload incident photos directly to a public Supabase Storage bucket.
-- **📱 Responsive Stepper Form**: Clear multi-step citizen reporting form with scroll-spy progress indicators.
-- **🌙 Theme Toggle**: Persistent dark and light mode toggle saved to local storage with a hydration-flicker-free placeholder.
-- **📞 Quick Dial Panel & Directory**: One-tap floating emergency dialer and a dedicated hotline directory page with clickable telephone links.
-- **📖 Safety Guidelines**: Dedicated directory explaining safety protocols for floods, fires, medical issues, wire faults, and earthquakes.
+- ![GPS](https://img.shields.io/badge/-GPS_Location-e11d48?style=flat-square) Automatically retrieves the reporter's current coordinates via the browser's Geolocation API.
+- ![Map](https://img.shields.io/badge/-Interactive_Map-e11d48?style=flat-square) Incorporates a Leaflet map with a draggable pin for precise incident location marking.
+- ![Categories](https://img.shields.io/badge/-Categorized_Incidents-e11d48?style=flat-square) Predefined incident categories (e.g., Flood, Fire, Crash, Dangling Wire, Medical, and Other).
+- ![Barangay](https://img.shields.io/badge/-Barangay_Selection-e11d48?style=flat-square) Live search dropdown containing all 52 barangays of Ligao City with mobile-optimized touch targets.
+- ![Upload](https://img.shields.io/badge/-Photo_Upload-e11d48?style=flat-square) Allows citizens to upload incident photos directly to a public Supabase Storage bucket.
+- ![Form](https://img.shields.io/badge/-Responsive_Stepper-e11d48?style=flat-square) Clear multi-step citizen reporting form with scroll-spy progress indicators.
+- ![Theme](https://img.shields.io/badge/-Theme_Toggle-e11d48?style=flat-square) Persistent dark and light mode toggle saved to local storage with a hydration-flicker-free placeholder.
+- ![Quick Dial](https://img.shields.io/badge/-Quick_Dial-e11d48?style=flat-square) One-tap floating emergency dialer and a dedicated hotline directory page with clickable telephone links.
+- ![Guidelines](https://img.shields.io/badge/-Safety_Guidelines-e11d48?style=flat-square) Dedicated directory explaining safety protocols for floods, fires, medical issues, wire faults, and earthquakes.
+- ![AI Assistant](https://img.shields.io/badge/-AI_Triage_&_Reporting-e11d48?style=flat-square) Collapsible floating Gemini-powered chatbot providing first-aid guidance, disaster safety tips, and Generative UI report-drafting cards that auto-fill the reporting form.
 
 ## Project Structure
 
@@ -81,7 +82,7 @@ my-emergency-app/
 | **4** | **Landing Page & Navigation** | Dedicated Homepage, Hamburger Menu, Safety Guidelines, Hotlines | ✅ Complete |
 | **5** | **Authentication & Roles** | Secure access control for the upcoming admin dashboard | ✅ Complete |
 | **6** | **Data Validation** | Spam prevention and strict validation for reports | ✅ Complete |
-| **7** | **AI Triage Assistant** | Collapsible Gemini-powered chatbot for safety instructions | 🔲 Upcoming |
+| **7** | **AI Triage & Auto-Reporting** | Gemini-powered chatbot with Generative UI to auto-fill reports | ✅ Complete |
 | **8** | **Admin Dashboard** | Real-time dashboard, fully responsive for desktop & mobile | 🔲 Upcoming |
 
 ---

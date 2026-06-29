@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import QuickDial from '@/components/QuickDial'
+import Chatbot from '@/components/Chatbot'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
           <Footer />
           <QuickDial />
+          <Chatbot />
         </ThemeProvider>
       </body>
     </html>
