@@ -52,8 +52,11 @@ my-emergency-app/
 │   │   │   └── page.tsx            # Dedicated citizen reporting wizard page
 │   │   ├── guidelines/
 │   │   │   └── page.tsx            # Safety guidelines instructions page
-│   │   └── hotlines/
-│   │       └── page.tsx            # Full local emergency directory page
+│   │   ├── hotlines/
+│   │   │   └── page.tsx            # Full local emergency directory page
+│   │   └── api/
+│   │       └── chat/
+│   │           └── route.ts        # Secure backend route for Gemini AI chatbot
 │   ├── components/
 │   │   ├── CitizenForm.tsx         # Main multi-step emergency reporting form
 │   │   ├── Navigation.tsx          # Responsive global navigation header
@@ -62,7 +65,8 @@ my-emergency-app/
 │   │   ├── ReportMap.tsx           # Leaflet map component with draggable pin
 │   │   ├── ScrollReveal.tsx        # Scroll animation utility for grid cards
 │   │   ├── ThemeProvider.tsx       # next-themes integration provider
-│   │   └── ThemeToggle.tsx         # Light/dark mode button
+│   │   ├── ThemeToggle.tsx         # Light/dark mode button
+│   │   └── Chatbot.tsx             # Collapsible floating AI chatbot widget
 │   ├── lib/
 │   │   └── supabaseClient.ts       # Supabase Client initialization
 │   └── types/
