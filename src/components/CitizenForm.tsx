@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import { submitReport } from '@/app/actions/report'
+import { submitReport, registerReportSms } from '@/app/actions/report'
 import { MapPin, Upload, AlertTriangle, CheckCircle, Loader2, X, Search, ChevronDown, Waves, Flame, Car, Zap, HeartPulse, CircleAlert, Send, Maximize2, ArrowLeft, Camera, Image } from 'lucide-react'
 
 // Leaflet map — SSR disabled (Leaflet requires browser APIs)
@@ -503,86 +503,113 @@ function CitizenFormInner() {
     setCountdown(8)
     setStatus('success')
     window.scrollTo({ top: 0, behavior: 'smooth' })
-
-    // Countdown then reset
-    let secs = 8
-    const interval = setInterval(() => {
-      secs -= 1
-      setCountdown(secs)
-      if (secs <= 0) {
-        clearInterval(interval)
-        setForm({
-          category: '',
-          description: '',
-          barangay: '',
-          latitude: null,
-          longitude: null,
-          address: null,
-          imageFile: null,
-          imagePreview: null,
-        })
-        setReportId(null)
-        setReportCategory('')
-        setStatus('idle')
-      }
-    }, 1000)
   }
 
   if (status === 'success') {
     const cat = CATEGORIES.find((c) => c.label === reportCategory)
     const CatIcon = cat?.icon
+    const statusUrl = typeof window !== 'undefined' ? `${window.location.origin}/status/${reportId}` : ''
+
     return (
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-8 flex flex-col items-center gap-5 text-center animate-modal-in">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-6 sm:p-8 flex flex-col items-center gap-6 max-w-xl mx-auto text-center animate-modal-in">
         {/* Animated check */}
-        <div className="relative flex items-center justify-center py-2">
+        <div className="relative flex items-center justify-center py-1">
           {/* Pulsing outer ring */}
-          <div className="absolute w-24 h-24 rounded-full bg-green-500/10 dark:bg-green-400/10 animate-ping-slow" />
+          <div className="absolute w-20 h-20 rounded-full bg-green-500/10 dark:bg-green-400/10 animate-ping-slow" />
           
           {/* Main check circle */}
-          <div className="relative w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 border-2 border-green-400/60 dark:border-green-500/40 flex items-center justify-center shadow-inner">
-            <CheckCircle size={40} className="text-green-600 dark:text-green-400" />
+          <div className="relative w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-400/50 flex items-center justify-center shadow-inner">
+            <CheckCircle size={32} className="text-green-600 dark:text-green-400" />
           </div>
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Report Submitted!</h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Your report has been sent to the <span className="font-semibold text-gray-700 dark:text-gray-200">Ligao City CDRRMO</span>. Help is on the way.
+          <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white uppercase tracking-wider">Report Dispatched!</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-xs mt-1.5 leading-relaxed">
+            Your emergency report has been transmitted to the <span className="font-extrabold text-gray-700 dark:text-gray-200">Ligao City CDRRMO</span>. Help is on the way.
           </p>
         </div>
 
-        {/* Report reference */}
-        {reportId && (
-          <div className="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
-            <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">Reference No.</p>
-            <p className="font-mono text-base font-bold text-gray-800 dark:text-gray-100 tracking-widest">
-              #{reportId.slice(0, 8).toUpperCase()}
+        {/* Action: Link to Status Portal */}
+        <div className="w-full flex flex-col items-center gap-4 bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+          <div className="text-center w-full">
+            <span className="text-[10px] font-black text-gray-400 dark:text-gray-555 uppercase tracking-widest block mb-1">
+              Active Tracking Details
+            </span>
+            <p className="font-mono text-base font-bold text-gray-850 dark:text-gray-100 tracking-wider">
+              #{reportId?.slice(0, 8).toUpperCase()}
             </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Keep this for follow-up with CDRRMO</p>
           </div>
-        )}
 
-        {/* Category echo */}
-        {cat && CatIcon && (
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <CatIcon size={16} />
-            <span>Incident type: <span className="font-semibold text-gray-800 dark:text-gray-200">{reportCategory}</span></span>
+          {/* QR Code */}
+          {reportId && (
+            <div className="flex flex-col items-center gap-2 mt-1">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(statusUrl)}`}
+                alt="Scan to track status on mobile"
+                width={130}
+                height={130}
+                className="border border-gray-200 dark:border-gray-850 rounded-xl p-2 bg-white select-none shrink-0"
+              />
+              <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500">Scan to track on another device</span>
+            </div>
+          )}
+
+          {/* Link Controls */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full mt-2">
+            <a
+              href={`/status/${reportId}`}
+              className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer"
+            >
+              <MapPin size={14} />
+              <span>Track Real-Time Status</span>
+            </a>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(statusUrl)
+                alert('Tracking link copied to clipboard!')
+              }}
+              className="flex items-center justify-center gap-2 border border-gray-205 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 py-3 px-4 rounded-xl text-xs font-bold transition-all hover:bg-gray-50 dark:hover:bg-gray-750 active:scale-95 cursor-pointer"
+            >
+              <span>Copy Link</span>
+            </button>
           </div>
-        )}
+        </div>
+
+        {/* Optional post-submission SMS signup */}
+        <SmsOptInCard reportId={reportId || ''} />
 
         {/* 911 reminder */}
-        <div className="w-full bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-xl px-4 py-3">
-          <p className="text-xs text-red-700 dark:text-red-300">
+        <div className="w-full bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-xl px-4 py-3 text-center">
+          <p className="text-[11px] text-red-700 dark:text-red-400 leading-normal">
             If this is life-threatening, call{' '}
-            <a href="tel:911" className="font-bold text-red-600 dark:text-red-400 underline">911</a>{' '}
+            <a href="tel:911" className="font-extrabold text-red-600 dark:text-red-400 underline">911</a>{' '}
             immediately — don't wait for a response.
           </p>
         </div>
 
-        {/* Countdown */}
-        <p className="text-xs text-gray-400 dark:text-gray-600">
-          Form resets in <span className="font-semibold text-gray-500 dark:text-gray-400">{countdown}s</span>
-        </p>
+        {/* Submit another report button */}
+        <button
+          onClick={() => {
+            setForm({
+              category: '',
+              description: '',
+              barangay: '',
+              latitude: null,
+              longitude: null,
+              address: null,
+              imageFile: null,
+              imagePreview: null,
+            })
+            setReportId(null)
+            setReportCategory('')
+            setStatus('idle')
+          }}
+          className="mt-2 text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors underline cursor-pointer"
+        >
+          Submit Another Emergency Report
+        </button>
       </div>
     )
   }
@@ -1053,5 +1080,87 @@ export default function CitizenForm() {
     }>
       <CitizenFormInner />
     </Suspense>
+  )
+}
+
+// ── SMS Subscription Opt-in Card ───────────────────────────────────────────
+function SmsOptInCard({ reportId }: { reportId: string }) {
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [smsStatus, setSmsStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [smsError, setSmsError] = useState<string | null>(null)
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSmsError(null)
+    setSmsStatus('submitting')
+
+    try {
+      const result = await registerReportSms(reportId, phoneNumber)
+      if (!result.success) {
+        setSmsError(result.error || 'Failed to subscribe.')
+        setSmsStatus('error')
+        return
+      }
+      setSmsStatus('success')
+    } catch (err) {
+      setSmsError('An unexpected connection error occurred.')
+      setSmsStatus('error')
+    }
+  }
+
+  const maskPhoneNumber = (phone: string) => {
+    if (phone.length < 7) return phone
+    const firstPart = phone.slice(0, 4)
+    const lastPart = phone.slice(-3)
+    return `${firstPart}••••${lastPart}`
+  }
+
+  if (smsStatus === 'success') {
+    return (
+      <div className="w-full bg-green-50/50 dark:bg-green-950/15 border border-green-200/50 dark:border-green-900/30 rounded-2xl p-5 flex flex-col items-center gap-2">
+        <CheckCircle className="text-green-600 dark:text-green-500" size={24} />
+        <span className="text-xs font-extrabold text-green-800 dark:text-green-400">SMS Alerts Activated</span>
+        <p className="text-[10px] text-green-700 dark:text-green-500 leading-normal">
+          We will text you at <span className="font-bold">{maskPhoneNumber(phoneNumber)}</span> when status transitions to In Progress or Resolved.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="w-full bg-white dark:bg-gray-900/30 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 text-left">
+      <span className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-1">
+        SMS Tracking Opt-In
+      </span>
+      <h3 className="text-xs font-bold text-gray-800 dark:text-white mb-2 leading-snug">
+        Receive updates directly on your phone
+      </h3>
+      
+      <form onSubmit={handleSubscribe} className="flex gap-2">
+        <div className="flex-1 relative">
+          <input
+            type="tel"
+            placeholder="09XXXXXXXXX"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            disabled={smsStatus === 'submitting'}
+            className="w-full bg-gray-50 dark:bg-gray-850 border border-gray-200 dark:border-gray-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-red-500 disabled:opacity-50"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={smsStatus === 'submitting' || !phoneNumber}
+          className="bg-gray-900 hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 text-white px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all disabled:opacity-30 cursor-pointer"
+        >
+          {smsStatus === 'submitting' ? '...' : 'Subscribe'}
+        </button>
+      </form>
+      
+      {smsError && (
+        <p className="text-[10px] font-bold text-red-600 dark:text-red-400 mt-2">
+          {smsError}
+        </p>
+      )}
+    </div>
   )
 }

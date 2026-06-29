@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShieldAlert, FileText, Phone, MapPin, Clock, HeartPulse, ArrowRight } from 'lucide-react'
+import { ShieldAlert, FileText, Phone, MapPin, Clock, HeartPulse, ArrowRight, MessageSquare } from 'lucide-react'
 import ScrollReveal from '../components/ScrollReveal'
 
 export default function Home() {
@@ -50,7 +50,7 @@ export default function Home() {
 
       {/* Feature Grid */}
       <section className="relative z-10 max-w-screen-lg mx-auto px-4 py-8 border-t border-gray-200/60 dark:border-gray-800/40">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           
           {/* Card 1 */}
           <ScrollReveal delay={0} desktopDelay={0}>
@@ -60,7 +60,7 @@ export default function Home() {
               </div>
               <h3 className="font-bold text-gray-900 dark:text-white text-base">Real-Time Routing</h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 leading-relaxed">
-                Reports are instantly saved to Supabase and synced in real time to the CDRRMO dashboard, bypass-routing delays.
+                Reports are dispatched instantly and synced in real time to the CDRRMO dashboard, bypassing response delays.
               </p>
             </div>
           </ScrollReveal>
@@ -73,13 +73,13 @@ export default function Home() {
               </div>
               <h3 className="font-bold text-gray-900 dark:text-white text-base">Precise Map Pinning</h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 leading-relaxed">
-                Draggable Leaflet mapping automatically geocodes coordinates to street names and identifies local Albay barangays.
+                Draggable interactive mapping automatically detects street names and pinpoints your local Albay barangay.
               </p>
             </div>
           </ScrollReveal>
 
           {/* Card 3 */}
-          <ScrollReveal delay={0} desktopDelay={200}>
+          <ScrollReveal delay={200} desktopDelay={200}>
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm transition-colors duration-300 h-full">
               <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400 flex items-center justify-center mb-4 shadow-inner">
                 <HeartPulse size={20} className="stroke-[2.5]" />
@@ -87,6 +87,19 @@ export default function Home() {
               <h3 className="font-bold text-gray-900 dark:text-white text-base">Immediate First Aid</h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 leading-relaxed">
                 Review safety protocols for floods, fires, medical emergencies, and wire issues while responders are in route.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          {/* Card 4 */}
+          <ScrollReveal delay={300} desktopDelay={300}>
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm transition-colors duration-300 h-full">
+              <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-4 shadow-inner">
+                <MessageSquare size={20} className="stroke-[2.5]" />
+              </div>
+              <h3 className="font-bold text-gray-900 dark:text-white text-base">AI Dispatch Assistant</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 leading-relaxed">
+                Consult our virtual helper for real-time safety checklists, response guidelines, and first aid tips.
               </p>
             </div>
           </ScrollReveal>

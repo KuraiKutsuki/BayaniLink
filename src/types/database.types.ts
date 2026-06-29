@@ -20,6 +20,7 @@ export interface Database {
           barangay: string
           image_url: string | null
           status: 'Submitted' | 'In Progress' | 'Resolved'
+          contact_number: string | null
         }
         Insert: {
           id?: string
@@ -31,6 +32,7 @@ export interface Database {
           barangay: string
           image_url?: string | null
           status?: 'Submitted' | 'In Progress' | 'Resolved'
+          contact_number?: string | null
         }
         Update: {
           id?: string
@@ -42,6 +44,7 @@ export interface Database {
           barangay?: string
           image_url?: string | null
           status?: 'Submitted' | 'In Progress' | 'Resolved'
+          contact_number?: string | null
         }
         Relationships: []
       }

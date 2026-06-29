@@ -34,6 +34,7 @@ const reportSchema = z.object({
   barangay: z.string().min(1, 'Barangay is required'),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
+  contactNumber: z.string().optional().nullable(),
 })
 
 export async function submitReport(formData: FormData) {
@@ -54,6 +55,7 @@ export async function submitReport(formData: FormData) {
       barangay: formData.get('barangay') as string,
       latitude: parseFloat(formData.get('latitude') as string),
       longitude: parseFloat(formData.get('longitude') as string),
+      contactNumber: (formData.get('contactNumber') as string) || null,
     }
 
     // 3. Validation
@@ -65,6 +67,7 @@ export async function submitReport(formData: FormData) {
 
     // 4. XSS Sanitization
     const sanitizedDescription = xss(validatedData.description)
+    const sanitizedContactNumber = validatedData.contactNumber ? xss(validatedData.contactNumber) : null
 
     // 5. Initialize Supabase Server Client
     const supabase = await createClient()
@@ -82,8 +85,8 @@ export async function submitReport(formData: FormData) {
       const fileName = `${Date.now()}-${imageFile.name.replace(/\s/g, '_')}`
       
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('incident-photos')
-        .upload(fileName, imageFile, { cacheControl: '3600', upsert: false })
+          .from('incident-photos')
+          .upload(fileName, imageFile, { cacheControl: '3600', upsert: false })
 
       if (uploadError) {
         return { success: false, error: `Image upload failed: ${uploadError.message}` }
@@ -103,6 +106,7 @@ export async function submitReport(formData: FormData) {
         latitude: validatedData.latitude,
         longitude: validatedData.longitude,
         image_url,
+        contact_number: sanitizedContactNumber,
       })
       .select()
       .single()
@@ -114,6 +118,33 @@ export async function submitReport(formData: FormData) {
     return { success: true, reportId: insertData.id }
   } catch (err: any) {
     console.error('Report submission error:', err)
+    return { success: false, error: 'An unexpected error occurred on the server.' }
+  }
+}
+
+export async function registerReportSms(reportId: string, contactNumber: string) {
+  try {
+    // Basic phone number format validation (e.g. 09123456789 or +639123456789)
+    const phoneRegex = /^(09|\+639)\d{9}$/
+    if (!phoneRegex.test(contactNumber)) {
+      return { success: false, error: 'Invalid Philippine mobile number format (e.g. 09123456789).' }
+    }
+
+    const sanitizedContactNumber = xss(contactNumber)
+    const supabase = await createClient()
+
+    const { error } = await supabase
+      .from('reports')
+      .update({ contact_number: sanitizedContactNumber })
+      .eq('id', reportId)
+
+    if (error) {
+      return { success: false, error: `Failed to register contact number: ${error.message}` }
+    }
+
+    return { success: true }
+  } catch (err: any) {
+    console.error('SMS registration error:', err)
     return { success: false, error: 'An unexpected error occurred on the server.' }
   }
 }
