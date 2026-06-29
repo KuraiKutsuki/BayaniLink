@@ -1,6 +1,10 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { LogOut } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import AdminDashboard from '@/components/AdminDashboard'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export const metadata = {
   title: 'Admin Dashboard - BayaniLink',
@@ -16,6 +20,16 @@ export default async function AdminDashboardPage() {
     redirect('/admin/login')
   }
 
+  // Fetch initial emergency reports
+  const { data: reports, error } = await supabase
+    .from('reports')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching reports:', error)
+  }
+
   // Logout action
   async function logout() {
     'use server'
@@ -25,32 +39,73 @@ export default async function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-8 text-center animate-modal-in">
-        
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Admin Dashboard
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          Logged in as <span className="font-semibold text-gray-700 dark:text-gray-200">{user.email}</span>
-        </p>
+    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 flex flex-col">
+      {/* Admin Header */}
+      <header className="sticky top-0 z-50 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800/60 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 lg:px-6 py-3 flex items-center justify-between w-full">
+          {/* Logo & Brand */}
+          <Link href="/admin" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+              <Image 
+                src="/BayaniLink.png" 
+                alt="BayaniLink Logo" 
+                width={36} 
+                height={36} 
+                priority 
+                style={{ width: '36px', height: '36px' }} 
+              />
+            </div>
+            <div>
+              <h1 className="text-gray-900 dark:text-white font-bold text-base leading-none transition-colors duration-300">
+                BayaniLink
+              </h1>
+              <p className="text-gray-500 dark:text-gray-500 text-[10px] mt-0.5 font-medium tracking-wide uppercase">
+                CDRRMO ADMIN PORTAL
+              </p>
+            </div>
+          </Link>
 
-        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-xl text-sm text-blue-800 dark:text-blue-300 mb-8 text-left">
-          <p><strong>Note:</strong> This is a placeholder for Phase 5.</p>
-          <p className="mt-1">The full interactive dashboard (Phase 8) will display real-time maps and the incident report list here.</p>
+          {/* User Controls */}
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:block text-right">
+              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
+                Active Operator
+              </span>
+              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                {user.email}
+              </span>
+            </div>
+
+            <ThemeToggle />
+
+            <form action={logout}>
+              <button
+                type="submit"
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300 font-bold text-xs hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors shadow-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
+              >
+                <LogOut size={13} className="shrink-0" />
+                <span>Sign Out</span>
+              </button>
+            </form>
+          </div>
         </div>
+      </header>
 
-        <form action={logout}>
-          <button
-            type="submit"
-            className="flex items-center justify-center gap-2 mx-auto px-6 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
-          >
-            <LogOut size={16} />
-            Sign Out
-          </button>
-        </form>
-
-      </div>
+      {/* Main Dashboard Space */}
+      <main className="flex-1 p-4 lg:p-6 max-w-7xl mx-auto w-full">
+        {error ? (
+          <div className="bg-red-50 dark:bg-red-955/20 border border-red-200 dark:border-red-900/30 rounded-xl p-6 text-center shadow-sm">
+            <h2 className="text-sm font-black text-red-750 dark:text-red-400 uppercase tracking-wider mb-2">
+              Database Connection Error
+            </h2>
+            <p className="text-xs text-red-700 dark:text-red-300">
+              Failed to connect to the database to fetch emergency reports. Please check your Supabase credentials.
+            </p>
+          </div>
+        ) : (
+          <AdminDashboard initialReports={reports || []} />
+        )}
+      </main>
     </div>
   )
 }

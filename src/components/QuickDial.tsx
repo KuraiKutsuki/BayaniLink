@@ -39,14 +39,14 @@ export default function QuickDial() {
       {/* Backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-[1010] bg-black/40 backdrop-blur-sm"
           onClick={() => setOpen(false)}
         />
       )}
 
       {/* Panel */}
       <div
-        className={`fixed bottom-20 right-4 z-50 w-72 rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-out ${open ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
+        className={`fixed bottom-20 right-4 z-[1030] w-72 rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-out ${open ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
           }`}
       >
         <div className="bg-gradient-to-br from-red-700 to-red-900 px-4 py-3 flex items-center justify-between">
@@ -83,7 +83,7 @@ export default function QuickDial() {
       <button
         id="quick-dial-btn"
         onClick={() => setOpen((o) => !o)}
-        className={`fixed bottom-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-full shadow-lg
+        className={`fixed bottom-4 right-4 z-[1020] flex items-center gap-2 px-4 py-3 rounded-full shadow-lg
           bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold text-sm
           hover:from-red-500 hover:to-red-600 active:scale-95 transition-all duration-200`}
         aria-label="Open emergency hotlines"

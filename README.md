@@ -87,7 +87,7 @@ my-emergency-app/
 | **5** | **Authentication & Roles** | Secure access control for the upcoming admin dashboard | ✅ Complete |
 | **6** | **Data Validation** | Spam prevention and strict validation for reports | ✅ Complete |
 | **7** | **AI Triage & Auto-Reporting** | Gemini-powered chatbot with Generative UI to auto-fill reports | ✅ Complete |
-| **8** | **Admin Dashboard** | Real-time dashboard, fully responsive for desktop & mobile | 🔲 Upcoming |
+| **8** | **Admin Dashboard** | Real-time dashboard, fully responsive for desktop & mobile | ✅ Complete |
 
 ---
 

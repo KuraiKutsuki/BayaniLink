@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Phone, ShieldAlert, FileText, Home } from 'lucide-react'
+import { Menu, X, Phone, ShieldAlert, FileText, Home, Lock } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
 const navLinks = [
@@ -12,6 +12,7 @@ const navLinks = [
   { href: '/report', label: 'Report Emergency', icon: ShieldAlert },
   { href: '/guidelines', label: 'Guidelines', icon: FileText },
   { href: '/hotlines', label: 'Hotlines', icon: Phone },
+  { href: '/admin', label: 'Admin Portal', icon: Lock },
 ]
 
 export default function Navigation() {
