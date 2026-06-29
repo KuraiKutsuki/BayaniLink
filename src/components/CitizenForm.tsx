@@ -316,7 +316,7 @@ function CitizenFormInner() {
         if (isMounted) setIsAddressLoading(false)
       }
     }
-    const timeoutId = setTimeout(fetchAddress, 1000)
+    const timeoutId = setTimeout(fetchAddress, 300)
     return () => { isMounted = false; clearTimeout(timeoutId) }
   }, [form.latitude, form.longitude])
 
@@ -336,7 +336,7 @@ function CitizenFormInner() {
         if (isMounted) setIsTempAddressLoading(false)
       }
     }
-    const timeoutId = setTimeout(fetchAddress, 800)
+    const timeoutId = setTimeout(fetchAddress, 300)
     return () => { isMounted = false; clearTimeout(timeoutId) }
   }, [tempLat, tempLng])
 

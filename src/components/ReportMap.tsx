@@ -134,13 +134,18 @@ function MapController({
   // Fit bounds to show all markers in Admin Mode when reports list changes
   useEffect(() => {
     if (readOnly && reports && reports.length > 0 && !selectedReportId) {
-      const validCoords = reports.filter(r => r.latitude && r.longitude)
+      const validCoords = reports.filter(r => r.latitude != null && r.longitude != null && !isNaN(Number(r.latitude)) && !isNaN(Number(r.longitude)))
       if (validCoords.length > 0) {
         const bounds = L.latLngBounds(
-          validCoords.map(r => [r.latitude, r.longitude])
+          validCoords.map(r => [Number(r.latitude), Number(r.longitude)])
         )
-        // Pad the bounds so markers aren't right against the screen edges
-        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 })
+        // Only fit bounds with padding if map is visible
+        if (map.getSize().x > 0 && map.getSize().y > 0) {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 })
+        } else {
+          // If hidden (mobile list view), just set center silently
+          map.setView(bounds.getCenter(), 13, { animate: false })
+        }
       }
     }
   }, [reports, readOnly, selectedReportId, map])
@@ -149,11 +154,20 @@ function MapController({
   useEffect(() => {
     if (readOnly && selectedReportId && reports) {
       const selected = reports.find(r => r.id === selectedReportId)
-      if (selected) {
-        map.flyTo([selected.latitude, selected.longitude], GPS_ZOOM, {
-          animate: true,
-          duration: 1.0,
-        })
+      if (selected && selected.latitude != null && selected.longitude != null) {
+        const lat = Number(selected.latitude)
+        const lng = Number(selected.longitude)
+        if (!isNaN(lat) && !isNaN(lng)) {
+          if (map.getSize().x > 0 && map.getSize().y > 0) {
+            map.flyTo([lat, lng], GPS_ZOOM, {
+              animate: true,
+              duration: 1.0,
+            })
+          } else {
+            // If hidden, just set view silently to avoid NaN animation crash
+            map.setView([lat, lng], GPS_ZOOM, { animate: false })
+          }
+        }
       }
     }
   }, [selectedReportId, reports, readOnly, map])
@@ -250,13 +264,19 @@ export default function ReportMap({
 
         {/* 2. Admin Dashboard Mode Markers */}
         {readOnly && reports.map((report) => {
+          if (report.latitude == null || report.longitude == null || isNaN(Number(report.latitude)) || isNaN(Number(report.longitude))) {
+            return null;
+          }
+
+          const lat = Number(report.latitude)
+          const lng = Number(report.longitude)
           const isSelected = report.id === selectedReportId
           const color = STATUS_COLORS[report.status] || STATUS_COLORS.Submitted
           
           return (
             <Marker
               key={report.id}
-              position={[report.latitude, report.longitude]}
+              position={[lat, lng]}
               icon={createPinIcon(color, isSelected)}
               eventHandlers={{
                 click() {

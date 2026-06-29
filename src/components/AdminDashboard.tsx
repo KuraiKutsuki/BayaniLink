@@ -15,6 +15,7 @@ import {
   Filter,
   Map as MapIcon,
   List as ListIcon,
+  ChevronLeft,
   ChevronRight,
   Image as ImageIcon
 } from 'lucide-react'
@@ -79,6 +80,7 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
   })
 
   const selectedReport = reports.find((r) => r.id === selectedReportId)
+  const selectedIndex = filteredReports.findIndex((r) => r.id === selectedReportId)
 
   // Handle status update
   const handleStatusChange = (reportId: string, newStatus: 'Submitted' | 'In Progress' | 'Resolved') => {
@@ -125,7 +127,7 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
   return (
     <div className="flex flex-col h-full">
       {/* 1. Analytics at top */}
-      <AnalyticsCharts reports={reports} />
+      <AnalyticsCharts reports={filteredReports} />
 
       {/* 2. Responsive view controls (< lg viewport) */}
       <div className="flex lg:hidden bg-gray-100 dark:bg-gray-800 p-1 rounded-xl mb-4 self-center w-full max-w-sm border border-gray-200/50 dark:border-gray-700/50">
@@ -245,13 +247,15 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
                     }}
                     className={`w-full text-left p-4 hover:bg-gray-50 dark:hover:bg-gray-800/40 flex items-start justify-between gap-3 transition-all ${
                       isSelected 
-                        ? 'bg-red-50/40 dark:bg-red-950/10 border-l-4 border-l-red-600' 
-                        : 'border-l-4 border-l-transparent'
+                        ? 'bg-red-50/60 dark:bg-red-955/15' 
+                        : ''
                     }`}
                   >
                     <div className="space-y-1.5 min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-wider">
+                        <span className={`text-xs font-black uppercase tracking-wider transition-colors ${
+                          isSelected ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'
+                        }`}>
                           {report.category}
                         </span>
                         <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
@@ -323,12 +327,38 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
                   {selectedReport.category}
                 </h2>
               </div>
-              <button
-                onClick={() => setSelectedReportId(null)}
-                className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700/50 flex items-center justify-center text-gray-500 dark:text-gray-400 transition-colors focus:ring-2 focus:ring-red-500 focus:outline-none"
-              >
-                <X size={20} />
-              </button>
+              
+              <div className="flex items-center gap-2">
+                {/* Prev/Next Navigation Controls */}
+                {filteredReports.length > 1 && selectedIndex !== -1 && (
+                  <div className="flex items-center bg-gray-150 dark:bg-gray-850 rounded-xl p-0.5 border border-gray-200/50 dark:border-gray-800">
+                    <button
+                      onClick={() => setSelectedReportId(filteredReports[selectedIndex - 1].id)}
+                      disabled={selectedIndex === 0}
+                      title="Previous Incident"
+                      className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-950 dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <div className="w-px h-5 bg-gray-250 dark:bg-gray-750 self-center" />
+                    <button
+                      onClick={() => setSelectedReportId(filteredReports[selectedIndex + 1].id)}
+                      disabled={selectedIndex === filteredReports.length - 1}
+                      title="Next Incident"
+                      className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-950 dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => setSelectedReportId(null)}
+                  className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700/50 flex items-center justify-center text-gray-500 dark:text-gray-400 transition-colors focus:ring-2 focus:ring-red-500 focus:outline-none"
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             {/* Scrollable details */}
@@ -356,7 +386,7 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
                     <option value="Resolved">Resolved</option>
                   </select>
                   {isPending && (
-                    <div className="animate-spin text-red-600 dark:text-red-505">
+                    <div className="animate-spin text-red-600 dark:text-red-500">
                       <Clock size={16} />
                     </div>
                   )}

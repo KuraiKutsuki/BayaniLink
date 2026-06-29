@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Phone, X, ChevronUp } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 const hotlines = [
   { label: 'CDRRMO Ligao City', number: '(052) 481-0012' },
@@ -12,6 +13,13 @@ const hotlines = [
 ]
 
 export default function QuickDial() {
+  const pathname = usePathname()
+
+  // Hide on admin dashboard and login pages
+  if (pathname.startsWith('/admin')) {
+    return null
+  }
+
   const [open, setOpen] = useState(false)
 
   // Close on escape key

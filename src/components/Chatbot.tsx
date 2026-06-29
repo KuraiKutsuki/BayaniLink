@@ -22,6 +22,7 @@ const QUICK_ACTIONS = [
 
 export default function Chatbot() {
   const pathname = usePathname()
+  const isAdminPage = pathname.startsWith('/admin')
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -269,8 +270,13 @@ I can guide you on **first aid steps**, **disaster safety protocols**, and **how
         />
       )}
 
-      {/* Floating Action Button (FAB) - Bottom Left */}
-      <div id="chatbot-fab-btn" className="fixed bottom-4 left-4 z-[1020] flex items-center transition-all duration-300">
+      {/* Floating Action Button (FAB) - Bottom Left (Bottom Right on admin pages) */}
+      <div 
+        id="chatbot-fab-btn" 
+        className={`fixed bottom-4 z-[1020] flex items-center transition-all duration-300 ${
+          isAdminPage ? 'right-4' : 'left-4'
+        }`}
+      >
         {/* Pulsing ring indicator (always active to guide users under stress) */}
         {!isOpen && (
           <div className="absolute inset-0 rounded-full bg-red-500/25 dark:bg-red-400/25 animate-ping-slow pointer-events-none" />
@@ -290,7 +296,8 @@ I can guide you on **first aid steps**, **disaster safety protocols**, and **how
 
       {/* Chat Window Panel */}
       <div
-        className={`fixed bottom-20 left-4 z-[1030] flex flex-col rounded-2xl border bg-white/90 shadow-2xl shadow-slate-950/15 transition-all duration-300 ease-out origin-bottom-left dark:bg-slate-950/85 backdrop-blur-xl
+        className={`fixed bottom-20 z-[1030] flex flex-col rounded-2xl border bg-white/90 shadow-2xl shadow-slate-950/15 transition-all duration-300 ease-out dark:bg-slate-950/85 backdrop-blur-xl
+          ${isAdminPage ? 'right-4 origin-bottom-right' : 'left-4 origin-bottom-left'}
           ${isOpen
             ? 'translate-y-0 scale-100 opacity-100'
             : 'translate-y-6 scale-95 opacity-0 pointer-events-none'}
