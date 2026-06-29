@@ -348,7 +348,7 @@ export default function ReportMap({
                   {count > 1 && (
                     <div className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 border-b border-gray-150 dark:border-gray-800 pb-1.5 flex items-center justify-between">
                       <span>Multiple Incidents ({count})</span>
-                      <span className="bg-red-50 dark:bg-red-955/20 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded text-[9px] font-black uppercase">
+                      <span className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 px-1.5 py-0.5 rounded text-[9px] font-black uppercase">
                         Overlapping
                       </span>
                     </div>
@@ -367,8 +367,8 @@ export default function ReportMap({
                           }}
                           className={`p-2.5 rounded-xl border transition-all cursor-pointer text-left
                             ${isReportSelected
-                              ? 'bg-red-50/60 dark:bg-red-955/15 border-red-200 dark:border-red-900/30'
-                              : 'bg-gray-50/50 dark:bg-gray-800/30 border-gray-100 dark:border-gray-850 hover:bg-gray-100/50 dark:hover:bg-gray-850/50'
+                              ? 'bg-red-50/60 dark:bg-red-950/15 border-red-200 dark:border-red-900/30'
+                              : 'bg-gray-50/50 dark:bg-gray-800/30 border-gray-100 dark:border-gray-800 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                             }`}
                         >
                           <div className="flex items-center justify-between gap-2 mb-1.5">

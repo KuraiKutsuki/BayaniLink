@@ -101,8 +101,8 @@ export default async function AdminDashboardPage() {
       {/* Main Dashboard Space */}
       <main className="flex-1 p-4 lg:p-6 max-w-7xl mx-auto w-full">
         {error ? (
-          <div className="bg-red-50 dark:bg-red-955/20 border border-red-200 dark:border-red-900/30 rounded-xl p-6 text-center shadow-sm">
-            <h2 className="text-sm font-black text-red-750 dark:text-red-400 uppercase tracking-wider mb-2">
+          <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-xl p-6 text-center shadow-sm">
+            <h2 className="text-sm font-black text-red-700 dark:text-red-400 uppercase tracking-wider mb-2">
               Database Connection Error
             </h2>
             <p className="text-xs text-red-700 dark:text-red-300">

@@ -17,7 +17,9 @@ import {
   List as ListIcon,
   ChevronLeft,
   ChevronRight,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Maximize2,
+  Minimize2
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import AnalyticsCharts from './AnalyticsCharts'
@@ -41,9 +43,12 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
 
   const [isPending, startTransition] = useTransition()
   const [updateError, setUpdateError] = useState<string | null>(null)
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'connecting' | 'disconnected'>('connecting')
+  const [isMapMaximized, setIsMapMaximized] = useState(false)
 
   // Real-time subscription
   useEffect(() => {
+    setConnectionStatus('connecting')
     const channel = supabase
       .channel('admin-realtime-reports')
       .on(
@@ -61,26 +66,80 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
           }
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          setConnectionStatus('connected')
+        } else if (status === 'TIMED_OUT' || status === 'CHANNEL_ERROR') {
+          setConnectionStatus('disconnected')
+        }
+      })
 
     return () => {
       supabase.removeChannel(channel)
     }
   }, [])
 
-  // Filter logic
-  const filteredReports = reports.filter((report) => {
-    const matchesStatus = statusFilter === 'All' || report.status === statusFilter
+  // Filter logic split into three levels to prevent visual feedback loops:
+  // 1. Filtered ONLY by category and search (for Status Donut/Legend calculations)
+  const reportsFilteredByCategoryAndSearch = reports.filter((report) => {
     const matchesCategory = categoryFilter === 'All' || report.category === categoryFilter
     
     const searchString = `${report.barangay} ${report.description} ${report.category}`.toLowerCase()
     const matchesSearch = searchString.includes(searchTerm.toLowerCase())
 
-    return matchesStatus && matchesCategory && matchesSearch
+    return matchesCategory && matchesSearch
+  })
+
+  // 2. Filtered ONLY by status and search (for Category Chart progress bar calculations)
+  const reportsFilteredByStatusAndSearch = reports.filter((report) => {
+    const matchesStatus = statusFilter === 'All' || report.status === statusFilter
+    
+    const searchString = `${report.barangay} ${report.description} ${report.category}`.toLowerCase()
+    const matchesSearch = searchString.includes(searchTerm.toLowerCase())
+
+    return matchesStatus && matchesSearch
+  })
+
+  // 3. Fully filtered (for Map Markers and List rendering)
+  const filteredReports = reportsFilteredByCategoryAndSearch.filter((report) => {
+    return statusFilter === 'All' || report.status === statusFilter
   })
 
   const selectedReport = reports.find((r) => r.id === selectedReportId)
   const selectedIndex = filteredReports.findIndex((r) => r.id === selectedReportId)
+
+  // Keyboard navigation shortcuts for detail drawer
+  useEffect(() => {
+    if (!selectedReportId) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Guard against typing in fields
+      if (
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA' ||
+        document.activeElement?.tagName === 'SELECT'
+      ) {
+        return
+      }
+
+      if (e.key === 'Escape') {
+        setSelectedReportId(null)
+      } else if (e.key === 'ArrowLeft') {
+        if (selectedIndex > 0) {
+          setSelectedReportId(filteredReports[selectedIndex - 1].id)
+        }
+      } else if (e.key === 'ArrowRight') {
+        if (selectedIndex < filteredReports.length - 1) {
+          setSelectedReportId(filteredReports[selectedIndex + 1].id)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [selectedReportId, selectedIndex, filteredReports])
 
   // Handle status update
   const handleStatusChange = (reportId: string, newStatus: 'Submitted' | 'In Progress' | 'Resolved') => {
@@ -126,8 +185,52 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
 
   return (
     <div className="flex flex-col h-full">
+      {/* Live Sync Status Bar */}
+      <div className="flex justify-between items-center mb-4 shrink-0">
+        <h2 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          System Overview
+        </h2>
+        
+        <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm text-[8px] sm:text-[9px] font-black uppercase tracking-wider select-none">
+          {connectionStatus === 'connected' && (
+            <>
+              <span className="relative flex h-1.5 w-1.5 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600 dark:bg-green-500"></span>
+              </span>
+              <span className="text-green-700 dark:text-green-400">Live Sync Active</span>
+            </>
+          )}
+          {connectionStatus === 'connecting' && (
+            <>
+              <span className="relative flex h-1.5 w-1.5 shrink-0">
+                <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-yellow-500"></span>
+              </span>
+              <span className="text-yellow-700 dark:text-yellow-400">Connecting...</span>
+            </>
+          )}
+          {connectionStatus === 'disconnected' && (
+            <>
+              <span className="relative flex h-1.5 w-1.5 shrink-0">
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-600 dark:bg-red-500"></span>
+              </span>
+              <span className="text-red-700 dark:text-red-400">Sync Offline</span>
+            </>
+          )}
+        </div>
+      </div>
+
       {/* 1. Analytics at top */}
-      <AnalyticsCharts reports={filteredReports} />
+      <AnalyticsCharts 
+        reports={filteredReports} 
+        allCategoryReports={reportsFilteredByStatusAndSearch}
+        allStatusReports={reportsFilteredByCategoryAndSearch}
+        activeCategory={categoryFilter}
+        onSelectCategory={setCategoryFilter}
+        activeStatus={statusFilter}
+        onSelectStatus={setStatusFilter}
+      />
 
       {/* 2. Responsive view controls (< lg viewport) */}
       <div className="flex lg:hidden bg-gray-100 dark:bg-gray-800 p-1 rounded-xl mb-4 self-center w-full max-w-sm border border-gray-200/50 dark:border-gray-700/50">
@@ -247,7 +350,7 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
                     }}
                     className={`w-full text-left p-4 hover:bg-gray-50 dark:hover:bg-gray-800/40 flex items-start justify-between gap-3 transition-all ${
                       isSelected 
-                        ? 'bg-red-50/60 dark:bg-red-955/15' 
+                        ? 'bg-red-50/60 dark:bg-red-950/15' 
                         : ''
                     }`}
                   >
@@ -296,17 +399,43 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
 
         {/* Map Panel (Right) */}
         <div 
-          className={`lg:col-span-7 bg-white dark:bg-gray-900 rounded-2xl overflow-hidden flex flex-col h-full ${
-            activeTab === 'map' ? 'flex' : 'hidden lg:flex'
+          className={`bg-white dark:bg-gray-900 transition-all duration-300 ${
+            isMapMaximized 
+              ? 'fixed inset-0 z-[1040] rounded-none' 
+              : 'lg:col-span-7 rounded-2xl overflow-hidden flex flex-col h-full ' + (activeTab === 'map' ? 'flex' : 'hidden lg:flex')
           }`}
         >
-          <ReportMap
-            readOnly
-            reports={filteredReports}
-            selectedReportId={selectedReportId}
-            onSelectReport={(id) => setSelectedReportId(id)}
-            fullHeight
-          />
+          {isMapMaximized && (
+            <div className="absolute top-4 right-4 z-[1045] flex gap-2">
+              <button
+                onClick={() => setIsMapMaximized(false)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-800 rounded-xl shadow-lg text-xs font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all cursor-pointer"
+              >
+                <Minimize2 size={14} />
+                <span>Exit Fullscreen</span>
+              </button>
+            </div>
+          )}
+
+          <div className="relative w-full h-full flex-1">
+            {!isMapMaximized && (
+              <button
+                onClick={() => setIsMapMaximized(true)}
+                className="absolute top-4 right-4 z-[400] flex items-center gap-1 px-3 py-1.5 bg-white/95 dark:bg-gray-900/95 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm text-[10px] font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all cursor-pointer"
+              >
+                <Maximize2 size={12} />
+                <span>Full Map</span>
+              </button>
+            )}
+            
+            <ReportMap
+              readOnly
+              reports={filteredReports}
+              selectedReportId={selectedReportId}
+              onSelectReport={(id) => setSelectedReportId(id)}
+              fullHeight
+            />
+          </div>
         </div>
       </div>
 
@@ -331,7 +460,7 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
               <div className="flex items-center gap-2">
                 {/* Prev/Next Navigation Controls */}
                 {filteredReports.length > 1 && selectedIndex !== -1 && (
-                  <div className="flex items-center bg-gray-150 dark:bg-gray-850 rounded-xl p-0.5 border border-gray-200/50 dark:border-gray-800">
+                  <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5 border border-gray-200/50 dark:border-gray-800">
                     <button
                       onClick={() => setSelectedReportId(filteredReports[selectedIndex - 1].id)}
                       disabled={selectedIndex === 0}
@@ -340,7 +469,7 @@ export default function AdminDashboard({ initialReports }: { initialReports: Rep
                     >
                       <ChevronLeft size={18} />
                     </button>
-                    <div className="w-px h-5 bg-gray-250 dark:bg-gray-750 self-center" />
+                    <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 self-center" />
                     <button
                       onClick={() => setSelectedReportId(filteredReports[selectedIndex + 1].id)}
                       disabled={selectedIndex === filteredReports.length - 1}
