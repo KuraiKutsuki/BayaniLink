@@ -31,7 +31,7 @@ The name *"BayaniLink"* is a portmanteau of the Filipino word **"Bayanihan"** (t
 - ![GPS](https://img.shields.io/badge/-GPS_Location-e11d48?style=flat-square) Automatically retrieves the reporter's current coordinates via the browser's Geolocation API.
 - ![Map](https://img.shields.io/badge/-Interactive_Map-e11d48?style=flat-square) Incorporates a Leaflet map with a draggable pin for precise incident location marking.
 - ![Categories](https://img.shields.io/badge/-Categorized_Incidents-e11d48?style=flat-square) Predefined incident categories (e.g., Flood, Fire, Crash, Dangling Wire, Medical, and Other).
-- ![Barangay](https://img.shields.io/badge/-Barangay_Selection-e11d48?style=flat-square) Live search dropdown containing all 52 barangays of Ligao City with mobile-optimized touch targets.
+- ![Barangay](https://img.shields.io/badge/-Barangay_Selection-e11d48?style=flat-square) Live search dropdown containing all 55 barangays of Ligao City with mobile-optimized touch targets.
 - ![Upload](https://img.shields.io/badge/-Photo_Upload-e11d48?style=flat-square) Allows citizens to upload incident photos directly to a public Supabase Storage bucket.
 - ![Form](https://img.shields.io/badge/-Responsive_Stepper-e11d48?style=flat-square) Clear multi-step citizen reporting form with scroll-spy progress indicators.
 - ![Theme](https://img.shields.io/badge/-Theme_Toggle-e11d48?style=flat-square) Persistent dark and light mode toggle saved to local storage with a hydration-flicker-free placeholder.
